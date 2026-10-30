@@ -29,3 +29,13 @@
 Claude에게 “AX교실 사이트 만들어 줘”, “골목 교실 버전으로 복제해 줘”처럼 요청하면 `SKILL.md`를 따라 작업합니다. 직접 게시하려면 `template/index.html`을 Claude 아티팩트로 올리고 `template/capabilities.json`을 권한으로 지정하세요.
 
 영상 목록은 제목·채널·조회수로 고른 후보입니다. 운영 전에 팀이 직접 보고 확정해 주세요.
+
+## 연계 (밸류체인)
+
+이 저장소는 [policy-media-desk](https://github.com/goodmorninghope-khs/policy-media-desk) 밸류체인의 **⑤ 학습** 고리다. 상태: 제안 (발행인 확인 후 실제로 이으면 '연계'로 바꾼다).
+
+- 받음: WEEKLY AX 신호 → AX교실 '업무 상황별' 사례·미션 후보
+- 넘김: 교실에서 나온 현장 질문 → 촉 레이더·JUNGNANG Q 후보
+- 넘길 때는 출처 지면(지면명·호수·날짜·링크)과 '닿는 공약'을 붙이고, 침은 의견으로 남긴다. 결정은 받는 고리의 책임자가 한다.
+
+전체 사슬: [references/value-chain.md](https://github.com/goodmorninghope-khs/policy-media-desk/blob/main/references/value-chain.md)
