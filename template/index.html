@@ -209,6 +209,40 @@ details.grow summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-wei
 .tried[aria-pressed="true"]{background:var(--teal);color:#fff}
 .tried:disabled{opacity:.45;cursor:default}
 .dept li{grid-template-columns:1fr auto}
+/* 확인 문제·수료 시험·포인트·과 대항 */
+.quiz{background:var(--surface);border:2px solid var(--teal);border-radius:14px;padding:16px 18px;margin-top:22px;display:grid;gap:12px}
+.quiz.pass{border-color:var(--done);background:var(--teal-soft)}
+.quiz h3{margin:0;font-size:18px}
+.quiz .lead{margin:0;font-size:13.5px;color:var(--muted)}
+.quiz fieldset{border:1px solid var(--line);border-radius:10px;padding:10px 12px;margin:0;display:grid;gap:6px;min-width:0}
+.quiz fieldset.bad{border-color:var(--coral);background:color-mix(in srgb,var(--coral) 6%,transparent)}
+.quiz fieldset.good{border-color:var(--done)}
+.quiz legend{font-weight:700;font-size:14.5px;padding:0 4px}
+.quiz label{display:flex;gap:8px;align-items:flex-start;font-size:14px;cursor:pointer;overflow-wrap:anywhere}
+.quiz label input{margin-top:4px;flex:none}
+.quiz .ex{font-size:13px;margin:2px 0 0;color:var(--ink);border-left:3px solid var(--amber);padding-left:8px}
+.quiz .score{font-family:var(--f-display);font-size:30px;color:var(--coral);line-height:1}
+.achs{display:flex;flex-wrap:wrap;gap:4px;margin:8px 0 6px}
+.ach{font-size:11.5px;border:1px solid var(--line);border-radius:999px;padding:1px 8px;color:var(--muted);opacity:.6}
+.ach.on{border-color:var(--amber);background:var(--amber-soft);color:var(--ink);opacity:1;font-weight:700}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:12px 20px;border-radius:12px;font-weight:700;z-index:50;box-shadow:0 8px 24px rgba(0,0,0,.25);max-width:calc(100vw - 32px);text-align:center;animation:pop .35s ease-out}
+@keyframes pop{from{transform:translate(-50%,16px);opacity:0}to{transform:translate(-50%,0);opacity:1}}
+.live{font-size:10px;font-weight:700;letter-spacing:.08em;color:#fff;background:var(--coral);border-radius:4px;padding:1px 5px;vertical-align:middle;animation:blink 2s infinite}
+@keyframes blink{50%{opacity:.45}}
+.mini-board{list-style:none;margin:0;padding:0;display:grid;gap:7px}
+.mini-board li{display:grid;grid-template-columns:20px 84px 1fr 46px;gap:6px;align-items:center;font-size:13px}
+.mini-board .bar,.board .bar{height:10px;border-radius:5px;background:linear-gradient(90deg,var(--teal),var(--amber));min-width:2px}
+.mini-board .n{text-align:right;font-family:var(--f-mono);font-size:12px}
+.rk{font-family:var(--f-display);text-align:center;color:var(--muted)}
+.rk.r1{color:#c9971a}.rk.r2{color:#8d9aa0}.rk.r3{color:#b26b3a}
+.board{width:100%;border-collapse:collapse;font-size:13.5px;background:var(--surface);border-radius:12px;overflow:hidden}
+.board th,.board td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+.board th:nth-child(-n+2),.board td:nth-child(-n+2){text-align:left}
+.board td.barc{width:28%;min-width:90px}
+.board tr.mine td{background:var(--amber-soft)}
+.boardwrap{overflow-x:auto;grid-column:1/-1}
+#myDept form{display:flex;gap:6px;margin-top:2px}
+#myDept input{flex:1;min-width:0;font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
 @media (max-width:900px){.main{grid-template-columns:1fr}aside{position:static}header.top{grid-template-columns:1fr}.starts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
@@ -223,15 +257,16 @@ details.grow summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-wei
     <div class="me" aria-live="polite">
       <small>지금 나는</small>
       <div class="lv" id="myLevel">씨앗을 받기 전</div>
-      <div class="nums">완성한 미션 <b id="myMission">0/5</b></div>
+      <div class="nums">완성한 단계 <b id="myMission">0/5</b> · AX 포인트 <b id="myPts">0</b></div>
       <button class="next" id="myNext" data-go="0"><b>다음 한 걸음</b> · 5분 맛보기로 AI에게 첫 일 맡기기</button>
       <details class="grow"><summary>나의 성장 기록</summary>
         <div class="badges" id="badges" aria-label="받은 배지"></div>
         <div class="nums">본 영상 <b id="mySeen">0</b> · 출석 <b class="streak" id="myStreak">0주 연속</b></div>
         <div class="nums">받은 ‘이게되네!’ <b id="myWow">0</b> · 내 레시피로 해 본 동료 <b id="myTaught">0</b></div>
-        <small>영상 수·출석은 참고 기록일 뿐, 수료는 완성한 미션으로만 판단합니다.</small>
+        <div class="achs" id="achs"></div>
+        <small>포인트: 영상 5 · 확인 문제 20 · 미션 인증 50 · 따라 하기 10 · 내 레시피를 동료가 따라 하면 30 · 질문 5 · 답 10 · 수료 시험 100. 수료는 단계 완성과 수료 시험으로만 판단합니다.</small>
       </details>
-      <small id="myDept" style="margin-top:6px">소속 과는 첫 인증 때 적어 주세요</small>
+      <div id="myDept" style="margin-top:6px;font-size:12px;color:var(--muted)"></div>
     </div>
   </header>
 
@@ -247,6 +282,7 @@ details.grow summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-wei
     <button role="tab" id="tab-situation" aria-selected="false">업무 상황별 영상</button>
     <button role="tab" id="tab-recipes" aria-selected="false">중랑 AI 레시피 서랍</button>
     <button role="tab" id="tab-qna" aria-selected="false">누가누배 묻고 답하기</button>
+    <button role="tab" id="tab-board" aria-selected="false">과 대항 현황</button>
     <button role="tab" id="tab-review" aria-selected="false" hidden>AI혁신팀 검수함 <span id="reviewCount"></span></button>
   </div>
 
@@ -260,6 +296,7 @@ details.grow summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-wei
       <div id="missionBox"></div>
       <div class="vhead" id="vhead"></div>
       <div class="cards" id="cards"></div>
+      <div id="quizBox"></div>
       <div id="recBox"></div>
     </section>
     <aside>
@@ -270,13 +307,14 @@ details.grow summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-wei
         <ul class="feed" id="feed"></ul>
       </div>
       <div class="panel">
-        <h4>과별 참여 현황</h4>
+        <h4>과 대항 실시간 <span class="live">LIVE</span></h4>
         <ul class="dept" id="dept"></ul>
       </div>
       <p class="notice" id="modeNote">기록을 불러오는 중입니다…</p>
     </aside>
   </div>
 
+  <div class="toast" id="toast" role="status" hidden></div>
   <footer>업무 PC에서 유튜브가 막히면 휴대폰으로 영상을 보고 미션은 PC에서 하세요. 영상은 공개 유튜브 채널의 콘텐츠이며 링크로만 연결합니다. 업무 자료를 AI에 넣을 때는 개인정보·비공개 정보를 반드시 지우고, AI 브라우저에는 업무 계정 로그인을 맡기지 마세요. 좋은 10분 영상을 발견하면 AI혁신팀에 제보해 주세요.</footer>
 </div>
 
@@ -315,6 +353,56 @@ const STARTS=[
  {stage:2,ic:"stem",t:"PPT·포스터·카드뉴스",d:"줄기 · 보이는 결과물"},
  {stage:3,ic:"tree",t:"웹에서 찾고 모으는 일",d:"나무 · AI 브라우저에게"},
  {stage:4,ic:"fruit",t:"매번 되풀이하는 일",d:"열매 · 우리 과 도구 만들기"}
+];
+/* 단계 확인 문제: 단계마다 3개, 모두 맞히면 통과. o[0]이 정답이고 화면에서는 자리를 돌려 보여 준다 */
+const QUIZ={
+ s0:[
+  {q:"이 교실이 권하는, AI에게 일을 잘 시키는 네 가지 요소는?",o:["역할·과업·맥락·형식","주제·분량·마감·보고","질문·답변·평가·저장","제목·목차·본문·결론"],e:"누구인 척(역할), 무엇을(과업), 어떤 상황에서(맥락), 어떤 모양으로(형식). 네 가지를 넣으면 답이 달라집니다."},
+  {q:"민원 답변 초안을 AI에게 맡기려 한다. 가장 먼저 할 일은?",o:["민원인 이름·연락처·주소를 지우거나 바꾼다","민원 원문을 그대로 붙여 넣는다","주민번호는 뒷자리만 넣는다","개인 메일로 옮겨서 넣는다"],e:"개인정보는 넣기 전에 지웁니다. 판단이 어려우면 넣지 말고 먼저 묻습니다."},
+  {q:"AI가 알려 준 법령 조문과 날짜가 그럴듯하다. 어떻게 할까?",o:["원문으로 확인하고, 근거와 출처를 함께 요청한다","그럴듯하면 그대로 쓴다","다른 AI에 한 번 더 물으면 끝이다","숫자만 지우고 쓴다"],e:"AI는 모르는 것도 그럴듯하게 지어낼 수 있습니다. 숫자·법령·날짜는 꼭 원문으로."}],
+ s1:[
+  {q:"AI로 만든 보고서 초안, 결재에 올리기 전 사람이 꼭 할 일은?",o:["숫자·고유명사·사실관계를 원자료와 대조한다","글꼴만 맞춘다","AI가 만들었으니 그대로 올린다","분량만 줄인다"],e:"문서의 책임은 사람에게 있습니다. AI가 한 일과 사람이 고친 부분을 나눠 적어 두면 레시피가 됩니다."},
+  {q:"회의 메모를 회의록 표로 정리시킬 때, 정해지지 않은 담당·기한은?",o:["‘미정’으로 두라고 지시한다","AI가 알아서 그럴듯하게 채우게 한다","칸을 없앤다","아무 이름이나 넣는다"],e:"빈칸을 채우라고 하면 AI는 지어냅니다. 모르는 것은 모른다고 쓰게 시키는 것이 요령입니다."},
+  {q:"새 오피스 도구로 한글 파일을 열고 고칠 때 안전한 습관은?",o:["원본은 따로 보관하고 사본으로 작업한다","원본에 바로 덮어쓴다","서식이 깨져도 그대로 보낸다","파일을 공개 링크로 올려 둔다"],e:"복잡한 한글 서식은 도구마다 다르게 열릴 수 있습니다. 중요한 문서는 원본을 따로 둡니다."}],
+ s2:[
+  {q:"AI로 만든 행사 포스터 시안, 게시 전에 꼭 확인할 것은?",o:["날짜·장소·연락처 오탈자와 사실","배경 색깔","글자 크기만","AI가 만들었으니 확인할 필요 없다"],e:"AI는 글자를 그림처럼 그리다 틀리기 쉽습니다. 주민이 보는 정보는 사람이 한 글자씩 확인합니다."},
+  {q:"카드뉴스 구성안을 잘 받기 위한 요청은?",o:["대상과 장 수, 장마다 넣을 내용을 정해 준다","‘카드뉴스 만들어 줘’ 한 줄만 쓴다","아무 조건 없이 길게만 쓰라고 한다","다른 구 카드뉴스를 그대로 베끼라고 한다"],e:"누구에게(대상) 몇 장으로(형식). 씨앗 단계의 역할·과업·맥락·형식이 여기서도 통합니다."},
+  {q:"자료를 넣어 오디오 요약을 만들 때 주의할 점은?",o:["공개해도 되는 자료만 넣고, 요약이 원문과 맞는지 들어 본다","내부 비공개 문서도 괜찮다","요약은 항상 정확하다","출처는 밝힐 필요 없다"],e:"요약도 틀릴 수 있습니다. 넣는 자료의 공개 범위와 결과의 정확성, 둘 다 사람이 챙깁니다."}],
+ s3:[
+  {q:"AI 브라우저에게 맡기면 안 되는 것은?",o:["업무 계정 로그인과 내부 시스템 작업","다른 구청 보도자료 찾아 표로 정리","공개 웹 검색","공개 페이지 화면 저장"],e:"AI 브라우저는 직접 클릭·입력하는 도구입니다. 로그인 없는 공개 웹 작업부터 시킵니다."},
+  {q:"AI 브라우저가 일하는 동안 사람이 할 일은?",o:["과정을 지켜보고 결과를 확인하며 막힌 지점을 적는다","맡기고 자리를 비운다","결과는 확인하지 않는다","막히면 비밀번호를 알려 준다"],e:"막힌 지점을 적는 것이 나무 단계 인증의 절반입니다. 다음 사람의 시행착오를 줄여 줍니다."},
+  {q:"처음 시켜 보기 좋은 웹 작업은?",o:["로그인 없이 되는 공개 정보를 모아 표로 만들기","인사 시스템에서 직원 정보 내려받기","전자결재 올리기","업무 메일함 정리하기"],e:"틀려도 피해가 없고 결과를 눈으로 확인하기 쉬운 일부터 맡깁니다."}],
+ s4:[
+  {q:"젬(Gem)·GPTs 같은 맞춤 AI를 만들 때 핵심은?",o:["역할·말투·확인할 것·하면 안 되는 것을 지침으로 써 둔다","이름을 멋지게 짓는다","쓸 때마다 처음부터 설명한다","코딩을 먼저 배운다"],e:"한 번 써 둔 지침이 계속 일합니다. 그것이 ‘도구’입니다."},
+  {q:"바이브코딩이란?",o:["말로 설명해 AI가 작동하는 프로그램을 만들게 하는 방식","음악을 틀어 놓고 코딩하는 것","개발자만 하는 고급 코딩","코드를 손으로 한 줄씩 쓰는 것"],e:"코딩을 몰라도 ‘우리 과 체크리스트 웹페이지’처럼 작은 것부터 만들 수 있습니다."},
+  {q:"만든 도구를 우리 과에 건낼 때 좋은 순서는?",o:["동료 한 명이 먼저 써 보고 의견을 반영한다","전 직원에게 바로 의무화한다","설명 없이 링크만 보낸다","실제 개인정보를 넣어 시험한다"],e:"열매 미션의 인증이 ‘써 본 동료의 한마디’인 이유입니다."}]
+};
+/* 수료 시험: 상황형 10문항, 80점 이상 통과 */
+const EXAM=[
+ {q:"주민 민원 50건을 AI로 유형 분류하려 한다. 가장 알맞은 방법은?",o:["이름·연락처·주소·민원번호를 지운 뒤 내용만 넣고, 분류 기준을 먼저 정해 준다","엑셀 원본을 그대로 올리고 알아서 분류하게 한다","민원번호는 남겨야 하니 번호와 이름만 남긴다","업무망이 느리니 개인 계정 AI에 원본을 넣는다"],e:"개인정보를 지우는 것과 기준을 사람이 정하는 것, 둘 다입니다."},
+ {q:"AI 답에 ‘개정된 ○○법 제12조’가 인용됐다. 올바른 행동은?",o:["국가법령정보센터 원문으로 조문과 시행일을 확인한 뒤 쓴다","조문 번호까지 있으니 믿고 쓴다","다른 AI에 맞느냐고 물어보고 쓴다","조문 번호만 지우고 내용은 쓴다"],e:"그럴듯한 조문 번호가 가장 위험합니다. 원문 대조는 생략할 수 없습니다."},
+ {q:"같은 요청인데 결과가 들젩날젩하다. 가장 먼저 해 볼 것은?",o:["역할·맥락·형식과 좋은 예시 하나를 요청에 더한다","AI 도구를 계속 바꿔 본다","요청을 더 짧게 줄인다","AI는 원래 불안정하니 포기한다"],e:"예시 하나가 긴 설명보다 힘이 세습니다. 잘 된 요청문은 레시피로 남기세요."},
+ {q:"레시피 서랍에 올릴 레시피로 가장 좋은 것은?",o:["순서·요청문·사람이 고친 부분까지 적고 개인정보는 뺨 것","‘잘 됐어요’ 한 줄","실제 민원 원문을 그대로 붙인 것","내부 시스템 주소와 계정을 적은 것"],e:"동료가 따라 할 수 있어야 레시피입니다. 그래야 ‘나도 해 봤어요’가 쌓입니다."},
+ {q:"AI 브라우저로 공개 자료를 모으는데 로그인 창이 떴다. 어떻게 할까?",o:["멈추고, 로그인 없는 공개 페이지만 쓰라고 다시 지시한다","업무 계정을 입력해 준다","비밀번호를 AI에게 알려 준다","개인 계정으로 로그인해 준다"],e:"로그인은 맡기지 않습니다. 이것이 나무 단계의 제1원칙입니다."},
+ {q:"AI로 만든 홍보 이미지, 게시 전에 확인할 것은?",o:["저작권·초상권 문제와, 사실과 다르게 보이는 장면이 없는지","해상도만","AI 그림은 무엇이든 자유롭게 써도 된다","확인할 것 없다"],e:"실제 없는 풍경이나 닮은 얼굴은 주민을 오해하게 만듭니다. 게시 전 사람이 봅니다."},
+ {q:"우리 과 젬(Gem)이 가끔 없는 규정을 지어낸다. 가장 좋은 개선은?",o:["지침에 ‘자료에 없으면 모른다고 답할 것’을 넣고 근거 자료를 함께 넣어 둔다","더 친절한 말투로 바꾼다","동료들에게 쓰지 말라고 한다","이름을 바꾼다"],e:"하면 안 되는 것과 근거를 지침에 적는 것이 도구를 고치는 법입니다."},
+ {q:"이 교실에서 ‘AX력’을 가장 잘 보여 주는 증거는?",o:["내 업무에서 바뀜 결과물과 동료가 따라 쓴 레시피","본 영상 수","출석한 주 수","설치한 AI 도구 개수"],e:"교육 성과는 들은 시간이 아니라 바뀜 일의 수입니다."},
+ {q:"회의 녹음으로 AI 회의록을 만들 때 가장 먼저 챙길 것은?",o:["참석자에게 녹음·AI 사용을 알리고 비공개 내용은 뺀다","분위기를 위해 알리지 않고 녹음한다","AI 회의록을 고치지 않고 바로 결재한다","녹음 파일을 공개 링크로 공유한다"],e:"동의와 공개 범위가 먼저입니다. 결정·담당·기한은 사람이 확인합니다."},
+ {q:"반복 업무를 AI로 자동화하기 전에 먼저 할 일은?",o:["꼭 필요한 일인지부터 따져 보고, AI에 맡길 부분과 사람이 판단할 부분을 나눈다","일단 전부 자동화한다","사람의 판단까지 AI에게 맡긴다","비싼 도구부터 산다"],e:"AI부터 하지 않습니다. 없앨 수 있는 일은 없애고, 남은 일을 나눕니다."}
+];
+const PASS=80;
+const rot=(q,seed)=>{const n=q.o.length,r=seed%n;return {o:q.o.map((_,i)=>q.o[(i+r)%n]),a:(n-r)%n}};
+/* AX 포인트·도전 과제 */
+const PT={seen:5,quiz:20,done:50,tried:10,taught:30,q:5,a:10,exam:100};
+const ACH=[
+ {k:"first",t:"첫 발자국",d:"영상 하나를 보거나 확인 문제 하나를 통과",f:s=>s.seen+s.quiz>0},
+ {k:"quiz5",t:"문제왕",d:"다섯 단계 확인 문제 모두 통과",f:s=>s.quiz>=5},
+ {k:"badge1",t:"첫 배지",d:"단계 미션 하나 인증 완료",f:s=>s.done>=1},
+ {k:"follow3",t:"따라쟁이",d:"동료 레시피 3개를 따라 해 봄",f:s=>s.tried>=3},
+ {k:"teach3",t:"누가누배 선생님",d:"내 레시피를 동료 3명이 따라 함",f:s=>s.taught>=3},
+ {k:"answer3",t:"친절한 동료",d:"동료 질문에 3번 답함",f:s=>s.a>=3},
+ {k:"streak4",t:"꾸준함",d:"4주 연속 출석",f:s=>s.streak>=4},
+ {k:"grad",t:"열매를 맺다",d:"수료 시험 80점 이상",f:s=>s.exam>=PASS}
 ];
 const SITS=[
  {k:"first",label:"AI가 처음이에요"},
@@ -375,16 +463,16 @@ const safeUrl=u=>{try{const x=new URL(u);return /^https?:$/.test(x.protocol)?x.h
 const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 function weekKey(t){const d=new Date(t);d.setHours(0,0,0,0);d.setDate(d.getDate()+3-((d.getDay()+6)%7));const w1=new Date(d.getFullYear(),0,4);return d.getFullYear()+"-W"+String(1+Math.round(((d-w1)/864e5-3+((w1.getDay()+6)%7))/7)).padStart(2,"0")}
 function streakOf(weeks){let n=0;const t=Date.now();for(let i=0;i<60;i++){const k=weekKey(t-i*7*864e5);if(weeks&&weeks[k])n++;else if(i>0)break}return n}
-const MODES=["route","situation","recipes","qna","review"];
-const st={mode:"route",stage:0,sit:"first",open:false,docs:[],team:{},uid:null,db:null,user:null,admin:false,names:{},rf:{stage:"all",tool:"all",sort:"wow"},qf:"all"};
-let mine={stages:{},seen:{},likes:{},tried:{},weeks:{},qs:{},ans:{},recs:{},cert:null,dept:""};
+const MODES=["route","situation","recipes","qna","board","review"];
+const st={mode:"route",stage:0,sit:"first",open:false,docs:[],team:{},uid:null,db:null,user:null,admin:false,names:{},rf:{stage:"all",tool:"all",sort:"wow"},qf:"all",qa:{},qres:{},ex:{ans:{},res:null},bm:"sum"};
+let mine={stages:{},seen:{},likes:{},tried:{},quiz:{},exam:null,weeks:{},qs:{},ans:{},recs:{},cert:null,dept:""};
 let recOpen=false,certName="";
 const myId=()=>st.uid||"me";
 
 function setMode(m){
   if(m==="review"&&!st.admin)m="route";
   st.mode=m;
-  MODES.forEach(x=>$("#tab-"+x).setAttribute("aria-selected",m===x));
+  MODES.forEach(x=>{const b=$("#tab-"+x);b&&b.setAttribute("aria-selected",m===x)});
   $("#routeNav").hidden=m!=="route"; $("#sitNav").hidden=m!=="situation";
   try{history.replaceState(null,"","#"+m)}catch(e){}
   st.open=false;render();window.scrollTo({top:$(".tabs").offsetTop-10,behavior:"smooth"});
@@ -396,7 +484,32 @@ function statusOf(uid,k,cert){
   return "wait";
 }
 const memoOf=(uid,k)=>(st.team["r~"+uid+"~"+k]||{}).memo||"";
-const teamDone=k=>st.docs.filter(d=>d.stages&&d.stages[k]&&statusOf(d.uid||d.id,k,d.stages[k])==="ok").length;
+const teamDone=k=>st.docs.filter(d=>d.stages&&d.stages[k]&&d.quiz&&d.quiz[k]&&statusOf(d.uid||d.id,k,d.stages[k])==="ok").length;
+/* 내 단계 완성 = 미션 인증(검수 승인) + 확인 문제 통과 */
+const stageOk=k=>statusOf(myId(),k,mine.stages[k])==="ok"&&!!(mine.quiz||{})[k];
+const examPassed=()=>((mine.exam||{}).best||0)>=PASS;
+function statsAll(){
+  const taught={};st.docs.forEach(d=>{const uid=d.uid||d.id;Object.keys(d.tried||{}).forEach(k=>{if(!d.tried[k])return;const o=k.split("~")[0];if(o!==uid)taught[o]=(taught[o]||0)+1})});
+  const out={};st.docs.forEach(d=>{const uid=d.uid||d.id;
+    const s={uid,dept:d.dept||"",seen:Object.keys(d.seen||{}).filter(k=>d.seen[k]&&V.some(v=>v.id===k)).length,
+      quiz:STAGES.filter(x=>d.quiz&&d.quiz[x.k]).length,
+      done:STAGES.filter(x=>d.stages&&d.stages[x.k]&&statusOf(uid,x.k,d.stages[x.k])==="ok").length,
+      tried:Object.keys(d.tried||{}).filter(k=>d.tried[k]&&k.split("~")[0]!==uid).length,taught:taught[uid]||0,
+      q:Object.keys(d.qs||{}).length,a:Object.keys(d.ans||{}).length,exam:(d.exam||{}).best||0,streak:streakOf(d.weeks)};
+    s.full=STAGES.filter(x=>d.quiz&&d.quiz[x.k]&&d.stages&&d.stages[x.k]&&statusOf(uid,x.k,d.stages[x.k])==="ok").length;
+    s.pts=s.seen*PT.seen+s.quiz*PT.quiz+s.done*PT.done+s.tried*PT.tried+s.taught*PT.taught+s.q*PT.q+s.a*PT.a+(s.exam>=PASS?PT.exam:0);
+    out[uid]=s});
+  return out;
+}
+function deptRows(){
+  const by={};Object.values(statsAll()).forEach(s=>{if(!s.dept)return;const o=by[s.dept]=by[s.dept]||{dept:s.dept,n:0,seen:0,quiz:0,full:0,tried:0,grad:0,pts:0};
+    o.n++;o.seen+=s.seen;o.quiz+=s.quiz;o.full+=s.full;o.tried+=s.tried+s.taught;o.grad+=s.exam>=PASS?1:0;o.pts+=s.pts});
+  const rows=Object.values(by);rows.forEach(r=>r.avg=Math.round(r.pts/r.n));
+  const key=st.bm==="avg"?"avg":"pts";rows.sort((a,b)=>b[key]-a[key]||b.n-a.n||a.dept.localeCompare(b.dept,"ko"));
+  return {rows,key};
+}
+let toastT=null;
+function toast(msg){const t=$("#toast");t.textContent=msg;t.hidden=false;t.style.animation="none";void t.offsetWidth;t.style.animation="";clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true},3200)}
 function certs(){
   const wow={},tried={};st.docs.forEach(d=>{Object.keys(d.likes||{}).forEach(k=>{if(d.likes[k])wow[k]=(wow[k]||0)+1});Object.keys(d.tried||{}).forEach(k=>{if(d.tried[k])tried[k]=(tried[k]||0)+1})});
   const out=[];st.docs.forEach(d=>{const uid=d.uid||d.id;Object.entries(d.stages||{}).forEach(([k,m])=>{const s=STAGES.find(x=>x.k===k);if(s&&m&&m.note){const key=uid+"~"+k;out.push({key,uid,dept:d.dept,s,note:m.note,recipe:m.recipe||"",tool:m.tool||"",link:m.link,at:m.at||0,wow:wow[key]||0,tried:tried[key]||0,status:statusOf(uid,k,m)})}})});
@@ -417,10 +530,11 @@ function refLabel(ref){if(!ref||ref==="all")return "전체";if(ref.startsWith("s
 function refStage(ref){if(!ref||ref==="all")return null;if(ref.startsWith("s:"))return ref.slice(2);const v=V.find(x=>"v:"+x.id===ref);return v?STAGES[v.stage].k:null}
 
 function renderStops(){
-  $("#stops").innerHTML=STAGES.map((s,i)=>{const c=mine.stages[s.k];const stt=statusOf(myId(),s.k,c);
+  $("#stops").innerHTML=STAGES.map((s,i)=>{const c=mine.stages[s.k];const stt=statusOf(myId(),s.k,c);const qz=!!(mine.quiz||{})[s.k];
+    const lab=stt==="ok"&&qz?"✓ 단계 완성":stt==="ok"?"확인 문제 남음":stt==="wait"?"검수 대기"+(qz?" · 문제 ✓":""):stt==="back"?"보완 요청":qz?"문제 ✓ · 미션 대기":"미션 대기";
     return `<li><button aria-pressed="${st.stage===i}" data-stage="${i}">
-      <span class="stop ${stt==="ok"?"full":""}">${ICON[s.ic]}</span>
-      <strong>${esc(s.name)}</strong><span class="sub">${esc(s.sub)}</span><small>${stt==="ok"?"✓ 배지 획득":stt==="wait"?"검수 대기":stt==="back"?"보완 요청":"미션 대기"} · 동료 ${teamDone(s.k)}명</small></button></li>`}).join("");
+      <span class="stop ${stt==="ok"&&qz?"full":""}">${ICON[s.ic]}</span>
+      <strong>${esc(s.name)}</strong><span class="sub">${esc(s.sub)}</span><small>${lab} · 동료 ${teamDone(s.k)}명</small></button></li>`}).join("");
 }
 function renderStarts(){
   $("#starts").innerHTML=STARTS.map(s=>`<button data-go="${s.stage}">${ICON[s.ic]}<b>${esc(s.t)}</b><span>${esc(s.d)}</span></button>`).join("");
@@ -469,7 +583,7 @@ function missionBox(i){
     :`<div class="actions"><button class="btn ${stt==="ok"?"ok":"watch"} big" data-open>${stt==="back"?"메모대로 고쳐서 다시 올리기":done?"인증 고치기":"결과물 인증 요청"}</button><button class="btn big" data-ask="s:${s.k}">이 단계 질문하기</button></div>`;
   const STATUS={wait:`<p class="status">${PILL.wait} AI혁신팀이 확인 중입니다. 아직 동료에게 공개되지 않았고, 승인되면 배지가 켜지고 레시피가 서랍에 실립니다. 그동안 다음 단계 5분 맛보기를 해 보세요.</p>`,
     back:`<p class="status back">${PILL.back} AI혁신팀이 고칠 점을 남겼습니다. 메모대로 고쳐 다시 올리면 다시 확인합니다.</p>`,
-    ok:`<p class="status ok">${PILL.ok} 배지를 받았습니다. 레시피가 서랍에 실렸고, 이제 이 단계에 좋은 자료를 추천하거나 동료 질문에 답할 수 있어요.</p>`};
+    ok:`<p class="status ok">${PILL.ok} 미션 인증 완료!${(mine.quiz||{})[s.k]?"":" 아래 확인 문제 3개만 맞히면 단계 완성입니다."} 레시피가 서랍에 실렸고, 이제 이 단계에 좋은 자료를 추천하거나 동료 질문에 답할 수 있어요.</p>`};
   const tz=TASTE[s.k];
   const taste=tz&&!done?`<div class="taste"><b>딱 5분, 먼저 시켜 보세요 · ${esc(s.name)} 맛보기</b><pre id="tasteText">${esc(tz.p)}</pre><p>${esc(tz.n)} 실제 개인정보나 비공개 자료 대신 위 예시로 해 보세요. 맛보기는 인증이 아닙니다.</p>
     <div class="actions"><button class="btn" data-copytaste>예시 복사하기</button><button class="btn watch" data-open>되네요! 내 일로 미션 시작</button></div></div>`:"";
@@ -562,8 +676,48 @@ async function renderReview(){
   </article>`}).join("")}</div>`:`<p class="empty" style="grid-column:1/-1">검수할 인증이 없습니다.</p>`;
   await renderRecReview();
 }
+function qItem(q,j,seed,picked,graded,name){
+  const r=rot(q,seed);const bad=graded&&picked!==r.a;const good=graded&&picked===r.a;
+  return `<fieldset class="${bad?"bad":good?"good":""}"><legend>${j+1}. ${esc(q.q)}</legend>
+    ${r.o.map((o,i)=>`<label><input type="radio" name="${name}${j}" value="${i}" ${picked===i?"checked":""} required> <span>${esc(o)}</span></label>`).join("")}
+    ${bad?`<p class="ex">다시 골라 보세요. 힌트: ${esc(q.e)}</p>`:good?`<p class="ex">✓ ${esc(q.e)}</p>`:""}</fieldset>`;
+}
+function quizBox(i){
+  const s=STAGES[i],k=s.k,qs=QUIZ[k];const pass=(mine.quiz||{})[k];const si=STAGES.indexOf(s);
+  if(pass)return `<div class="quiz pass"><h3>✓ ${esc(s.name)} 확인 문제 통과</h3><p class="lead">${pass.tries>1?pass.tries+"번 만에":"한 번에"} 통과했어요 · +${PT.quiz}점. ${statusOf(myId(),k,mine.stages[k])==="ok"?"미션 인증까지 끝내 이 단계를 완성했습니다.":"이제 미션 인증만 받으면 단계 완성입니다."}</p></div>`;
+  const ans=st.qa[k]||{};const res=st.qres[k];
+  return `<form class="quiz" id="quizForm" data-k="${k}"><h3>${esc(s.name)} 확인 문제 3개</h3>
+    <p class="lead">단계를 끝내려면 미션 인증과 함께 세 문제를 모두 맞혀야 해요. 틀려도 힌트를 보고 바로 다시 풀 수 있어요.</p>
+    ${res?`<p class="lead"><span class="score">${res.ok}/3</span> · 아깝다! 빨간 문제만 힌트를 보고 다시 골라 보세요.</p>`:""}
+    ${qs.map((q,j)=>qItem(q,j,si*3+j,ans[j],!!res,"q")).join("")}
+    <div class="actions"><button class="btn watch big" type="submit">채점하기</button></div></form>`;
+}
+function renderExam(){
+  const ex=mine.exam||{};const tries=ex.tries||0;const res=st.ex.res;
+  $("#stagehead").innerHTML=`<h2>수료 시험 · 열매를 맺기 전 마지막 관문</h2><p>상황형 ${EXAM.length}문항, 문항당 10점. <b>${PASS}점 이상</b>이면 수료증이 열립니다. 다시 도전할 때마다 보기 순서가 바뀝니다.${tries?` 지금까지 ${tries}번 도전 · 최고 ${ex.best||0}점.`:""}</p>`;
+  $("#missionBox").innerHTML="";$("#vhead").textContent="";
+  if(!STAGES.every(s=>stageOk(s.k))){$("#cards").innerHTML=`<p class="empty" style="grid-column:1/-1">다섯 단계를 모두 완성(미션 인증 + 확인 문제)하면 수료 시험이 열립니다.</p>`;return}
+  const seed=res?res.seed:tries;
+  const head=res?`<p class="lead"><span class="score">${res.score}점</span> · ${res.score>=PASS?"합격! 오른쪽 수료증 칸에서 내려받으세요.":`${PASS}점까지 ${PASS-res.score}점 모자라요. 해설을 읽고 다시 도전해 보세요.`}</p>`:"";
+  $("#cards").innerHTML=`<form class="quiz" id="examForm" style="grid-column:1/-1;margin-top:0">${head}
+    ${EXAM.map((q,j)=>qItem(q,j,seed+j,res?res.picked[j]:st.ex.ans[j],!!res,"x")).join("")}
+    <div class="actions">${res?`<button class="btn watch big" type="button" data-exretry>${res.score>=PASS?"한 번 더 풀어 보기":"다시 도전"}</button>`:`<button class="btn watch big" type="submit">제출하고 채점하기</button>`}</div></form>`;
+}
+async function renderBoard(){
+  const {rows,key}=deptRows();const mx=Math.max(1,...rows.map(r=>r[key]));
+  $("#stagehead").innerHTML=`<h2>과 대항 현황 <span class="live">LIVE</span></h2><p>어느 과가 가장 많이 배우고 만들고 가르치고 있을까요? 동료가 영상을 보고, 문제를 풀고, 레시피를 따라 할 때마다 바로 바뀝니다. 인원이 적은 과는 ‘1인당’으로 보면 공평합니다.</p>`;
+  $("#missionBox").innerHTML=`<div class="filters"><button data-bm="sum" aria-pressed="${st.bm==="sum"}">AX 포인트 합계</button><button data-bm="avg" aria-pressed="${st.bm==="avg"}">1인당 포인트</button></div>`;
+  $("#vhead").textContent=rows.length?`${rows.length}개 과 참여 · ${new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"})} 기준`:"";
+  $("#cards").innerHTML=rows.length?`<div class="boardwrap"><table class="board"><thead><tr><th>#</th><th>과</th><th></th><th>${key==="avg"?"1인당 포인트":"포인트 합계"}</th><th>참여</th><th>본 영상</th><th>문제 통과</th><th>완성 단계</th><th>따라 함</th><th>수료</th></tr></thead><tbody>
+    ${rows.map((r,i)=>`<tr class="${r.dept===mine.dept?"mine":""}"><td class="rk ${i<3?"r"+(i+1):""}">${i+1}</td><td><b>${esc(r.dept)}</b>${r.dept===mine.dept?" (우리 과)":""}</td><td class="barc"><div class="bar" style="width:${r[key]/mx*100}%"></div></td><td><b>${r[key]}</b></td><td>${r.n}명</td><td>${r.seen}</td><td>${r.quiz}</td><td>${r.full}</td><td>${r.tried}</td><td>${r.grad}명</td></tr>`).join("")}</tbody></table></div>
+    <p class="src" style="grid-column:1/-1">포인트: 영상 5 · 확인 문제 20 · 미션 인증 50 · 따라 하기 10 · 내 레시피를 동료가 따라 하면 30 · 질문 5 · 답 10 · 수료 100. 소속 과를 적은 사람만 집계합니다.</p>`
+    :`<p class="empty" style="grid-column:1/-1">아직 집계할 과가 없습니다. ‘지금 나는’ 칸에서 소속 과를 적고 영상 하나만 봐도 우리 과가 표에 오릅니다.</p>`;
+}
+function openExam(){st.mode="exam";st.ex={ans:{},res:null};MODES.forEach(x=>{const b=$("#tab-"+x);b&&b.setAttribute("aria-selected","false")});$("#routeNav").hidden=true;$("#sitNav").hidden=true;render();window.scrollTo({top:$(".tabs").offsetTop-10,behavior:"smooth"})}
 function renderMain(){
-  $("#recBox").innerHTML="";$("#epigraph").hidden=st.mode!=="route";
+  $("#recBox").innerHTML="";$("#quizBox").innerHTML="";$("#epigraph").hidden=st.mode!=="route";
+  if(st.mode==="board")return renderBoard();
+  if(st.mode==="exam")return renderExam();
   if(st.mode==="recipes")return renderRecipes();
   if(st.mode==="qna")return renderQna();
   if(st.mode==="review")return renderReview();
@@ -574,6 +728,7 @@ function renderMain(){
     $("#vhead").textContent=`막히는 부분에 필요한 영상만 골라 보세요 · ${list.length}편, 모두 10분 이하`;
     renderRecBox(st.stage);
     $("#cards").innerHTML=list.map(v=>videoCard(v,qcount)).join("");
+    $("#quizBox").innerHTML=quizBox(st.stage);
   }else{const s=SITS.find(x=>x.k===st.sit);const list=V.filter(v=>v.sits.includes(s.k));
     $("#stagehead").innerHTML=`<h2>${esc(s.label)}</h2><p>이럴 때 바로 꺼내 보는 10분 이하 영상 ${list.length}편. 미션은 ‘성장 5단계’ 탭에서 인증합니다.</p>`;
     $("#missionBox").innerHTML="";$("#vhead").textContent="";
@@ -581,20 +736,24 @@ function renderMain(){
   }
 }
 function renderMe(){
-  const got=STAGES.filter(s=>statusOf(myId(),s.k,mine.stages[s.k])==="ok");const seen=Object.keys(mine.seen).filter(k=>mine.seen[k]&&V.some(v=>v.id===k)).length;
+  const got=STAGES.filter(s=>stageOk(s.k));const seen=Object.keys(mine.seen).filter(k=>mine.seen[k]&&V.some(v=>v.id===k)).length;
   $("#myMission").textContent=got.length+"/5";$("#mySeen").textContent=seen+"/"+V.length;
   $("#myStreak").textContent=streakOf(mine.weeks)+"주 연속";
   const myR=approved().filter(r=>r.uid===myId());
   $("#myWow").textContent=myR.reduce((a,r)=>a+r.wow,0);$("#myTaught").textContent=myR.reduce((a,r)=>a+r.tried,0)+"명";
   const waiting=STAGES.some(s=>statusOf(myId(),s.k,mine.stages[s.k])==="wait");
-  const nx=$("#myNext");const ni=STAGES.findIndex(s=>statusOf(myId(),s.k,mine.stages[s.k])!=="ok");
-  if(ni<0){nx.dataset.go="4";nx.innerHTML=`<b>다음 한 걸음</b> · 수료증 받고, 동료 질문에 답해 주기`}
+  const nx=$("#myNext");const ni=STAGES.findIndex(s=>!stageOk(s.k));
+  if(ni<0){nx.dataset.go=examPassed()?"4":"exam";nx.innerHTML=examPassed()?`<b>다음 한 걸음</b> · 수료증 받고, 동료 질문에 답해 주기`:`<b>다음 한 걸음</b> · 수료 시험 도전 (${PASS}점 이상)`}
   else{const s=STAGES[ni],sx=statusOf(myId(),s.k,mine.stages[s.k]);nx.dataset.go=String(ni);
-    nx.innerHTML=`<b>다음 한 걸음</b> · `+(sx==="wait"?`${esc(s.name)} 미션 확인 중 · 그동안 레시피 하나 따라 해 보기`:sx==="back"?`${esc(s.name)} 미션 메모대로 고쳐 다시 올리기`:ni===0?`5분 맛보기로 AI에게 첫 일 맡기기`:`${esc(s.name)} · ${esc(s.sub)}`);
+    nx.innerHTML=`<b>다음 한 걸음</b> · `+(sx==="ok"?`${esc(s.name)} 확인 문제 3개 풀기`:sx==="wait"?`${esc(s.name)} 미션 확인 중 · 그동안 레시피 하나 따라 해 보기`:sx==="back"?`${esc(s.name)} 미션 메모대로 고쳐 다시 올리기`:ni===0?`5분 맛보기로 AI에게 첫 일 맡기기`:`${esc(s.name)} · ${esc(s.sub)}`);
     if(sx==="wait")nx.dataset.go="recipes"}
-  $("#myLevel").textContent=got.length===5?"열매를 맺은 AX 동료":got.length?got[got.length-1].name+" 배지 보유":(waiting?"첫 배지 검수 중":seen?"씨앗을 심는 중":"씨앗을 받기 전");
-  $("#badges").innerHTML=STAGES.map(s=>{const stt=statusOf(myId(),s.k,mine.stages[s.k]);return `<span class="badge ${stt==="ok"?"on":stt?"wait":""}" title="${esc(s.name)} 배지${stt==="wait"?" (검수 대기)":stt==="back"?" (보완 요청)":""}">${ICON[s.ic]}</span>`}).join("");
-  $("#myDept").textContent=mine.dept||"소속 과는 첫 인증 때 적어 주세요";
+  const my=statsAll()[myId()]||{seen:0,quiz:0,done:0,tried:0,taught:0,q:0,a:0,exam:0,pts:0};my.streak=streakOf(mine.weeks);
+  $("#myPts").textContent=my.pts;
+  $("#achs").innerHTML=ACH.map(a=>`<span class="ach ${a.f(my)?"on":""}" title="${esc(a.d)}">${esc(a.t)}</span>`).join("");
+  $("#myLevel").textContent=examPassed()?"열매를 맺은 AX 동료":got.length===5?"수료 시험만 남았어요":got.length?got[got.length-1].name+" 단계 완성":(waiting?"첫 배지 검수 중":seen?"씨앗을 심는 중":"씨앗을 받기 전");
+  $("#badges").innerHTML=STAGES.map(s=>{const stt=statusOf(myId(),s.k,mine.stages[s.k]);return `<span class="badge ${stageOk(s.k)?"on":stt?"wait":""}" title="${esc(s.name)} 배지${stt==="wait"?" (검수 대기)":stt==="back"?" (보완 요청)":""}">${ICON[s.ic]}</span>`}).join("");
+  const md=$("#myDept");if(!(document.activeElement&&md.contains(document.activeElement))){
+    md.innerHTML=mine.dept?`${esc(mine.dept)} · <button class="mini" data-deptedit>바꾸기</button>`:`<form id="deptForm"><input name="dept" maxlength="20" placeholder="소속 과 (과 대항에 필요)" aria-label="소속 과" required><button class="mini" type="submit">저장</button></form>`}
   const tr=$("#tab-review");tr.hidden=!st.admin;if(st.admin){const n=certs().filter(c=>c.status==="wait").length+recs().filter(r=>r.status==="wait").length;$("#reviewCount").textContent=n?"("+n+")":""}
 }
 function ago(t){const d=(Date.now()-t)/6e4;if(d<1)return"방금";if(d<60)return Math.floor(d)+"분 전";if(d<1440)return Math.floor(d/60)+"시간 전";return Math.floor(d/1440)+"일 전"}
@@ -607,10 +766,10 @@ async function renderSide(){
   else fe.hidden=true;
   $("#feed").innerHTML=items.length?items.map(i=>`<li><b>${esc(nameOf(i.uid))}</b>${i.dept?` <span class="t">${esc(i.dept)}</span>`:""} · <span class="t">${esc(i.s.name)} 배지</span><br>“${esc(i.note)}”<br><span class="t">${i.recipe?"레시피 있음 · ":""}${i.tried?"따라 함 "+i.tried+" · ":""}이게되네 ${i.wow} · ${ago(i.at)}</span></li>`).join("")
     :`<p class="empty">아직 인증된 결과물이 없습니다. 씨앗 단계 미션으로 첫 결과물을 올려 주세요.</p>`;
-  const by={};all.forEach(c=>{if(c.dept){const o=by[c.dept]=by[c.dept]||{p:new Set(),n:0,t:0};o.p.add(c.uid);o.n++;o.t+=c.tried}});
-  const rows=Object.entries(by).sort((a,b)=>a[0].localeCompare(b[0],"ko"));
-  $("#dept").innerHTML=rows.length?rows.map(([k,o])=>`<li><span>${esc(k)}</span><span class="n">${o.p.size}명 · 사례 ${o.n}${o.t?" · 따라 함 "+o.t:""}</span></li>`).join("")+`<p class="src">가나다순 · 순위가 아니라 어느 과에서 누가 해 봤는지 보는 지도입니다.</p>`
-    :`<p class="empty">과별로 참여한 사람과 인증 사례가 여기에 쌓입니다.</p>`;
+  const {rows,key}=deptRows();const top=rows.slice(0,5);const mx=Math.max(1,...top.map(r=>r[key]));
+  const d=$("#dept");d.className="mini-board";
+  d.innerHTML=top.length?top.map((r,i)=>`<li><span class="rk ${i<3?"r"+(i+1):""}">${i+1}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.dept===mine.dept?"<b>"+esc(r.dept)+"</b>":esc(r.dept)}</span><span class="bar" style="width:${r[key]/mx*100}%"></span><span class="n">${r[key]}</span></li>`).join("")+`<button class="btn" style="margin-top:6px" data-mode="board">전체 현황 보기 (${rows.length}개 과)</button>`
+    :`<p class="empty">소속 과를 적고 영상 하나만 봐도 우리 과가 여기에 오릅니다.</p>`;
 }
 /* 누가누배 동료 추천: 배지를 받은 단계에 자료를 추천, AI혁신팀 승인 후 공개 */
 const parseLen=s=>{const m=String(s||"").trim().match(/^(\d{1,2}):([0-5]\d)$/);return m?(+m[1])*60+(+m[2]):null};
@@ -647,7 +806,7 @@ async function renderRecReview(){
     <div class="row"><button class="btn watch" data-rapprove="${esc(r.key)}">승인</button><input id="rmemo-${esc(r.key)}" maxlength="200" placeholder="보완 요청 메모"><button class="btn" data-rback="${esc(r.key)}">보완 요청</button></div></article>`}).join("")}</div>`);
 }
 /* 수료증: 다섯 단계 모두 인증 완료 시 PNG로 내려받기 */
-const allDone=()=>STAGES.every(s=>statusOf(myId(),s.k,mine.stages[s.k])==="ok");
+const allDone=()=>STAGES.every(s=>stageOk(s.k))&&examPassed();
 function certNo(){let h=7;for(const c of String(myId()))h=(h*31+c.charCodeAt(0))>>>0;return "중랑AX-"+new Date(mine.cert?.at||Date.now()).getFullYear()+"-"+String(h%100000).padStart(5,"0")}
 function wrapText(ctx,text,x,y,maxW,lh){let line="";for(const ch of text){if(ctx.measureText(line+ch).width>maxW&&line){ctx.fillText(line,x,y);line=ch.trim()?ch:"";y+=lh}else line+=ch}if(line)ctx.fillText(line,x,y);return y}
 async function drawCert(c){
@@ -663,7 +822,7 @@ async function drawCert(c){
   x.fillStyle=ink;x.font="400 78px "+D;x.fillText(certName||"이름",W/2,460);
   if(mine.dept){x.fillStyle=muted;x.font="500 30px "+B;x.fillText(mine.dept,W/2,508)}
   x.fillStyle=ink;x.font="500 32px "+B;
-  const body="위 사람은 찾아가는 AX교실 ‘어, 이게되네?’의 씨앗·새싹·줄기·나무·열매 다섯 단계 미션을 모두 마치고, 결과물과 레시피를 AI혁신팀으로부터 인증받았기에 이 수료증을 드립니다.";
+  const body="위 사람은 찾아가는 AX교실 ‘어, 이게되네?’의 씨앗·새싹·줄기·나무·열매 다섯 단계 미션을 모두 마치고, 결과물과 레시피를 AI혁신팀으로부터 인증받고 수료 시험을 "+((mine.exam||{}).best||0)+"점으로 통과하였기에 이 수료증을 드립니다.";
   wrapText(x,body,W/2,585,1120,52);
   const icons=STAGES.map(s=>[...ICON[s.ic].matchAll(/d="([^"]+)"/g)].map(m=>m[1]));
   STAGES.forEach((s,i)=>{const cx=W/2+(i-2)*170,cy=765;x.beginPath();x.arc(cx,cy,52,0,Math.PI*2);x.fillStyle=amber;x.fill();
@@ -676,8 +835,9 @@ async function drawCert(c){
 }
 async function renderCert(){
   const p=$("#certPanel");if(document.activeElement&&document.activeElement.id==="certName")return;
-  const done=STAGES.filter(s=>statusOf(myId(),s.k,mine.stages[s.k])==="ok").length;
-  if(done<5){p.innerHTML=`<h4>수료증</h4><p class="src">다섯 단계 미션을 모두 인증받으면 수료증을 내려받을 수 있어요. 지금 ${done}/5 단계.</p>`;return}
+  const done=STAGES.filter(s=>stageOk(s.k)).length;
+  if(done<5){p.innerHTML=`<h4>수료증</h4><p class="src">단계마다 미션 인증 + 확인 문제 3개를 마치면 단계 완성. 다섯 단계를 완성하면 수료 시험(${PASS}점 이상)이 열립니다. 지금 ${done}/5 단계.</p>`;return}
+  if(!examPassed()){const ex=mine.exam||{};p.innerHTML=`<h4>수료 시험이 열렸습니다</h4><p class="src">상황형 ${EXAM.length}문항, ${PASS}점 이상이면 수료증. ${ex.tries?`최고 ${ex.best||0}점 · ${ex.tries}번 도전.`:"몇 번이든 다시 도전할 수 있어요."}</p><button class="btn watch big" data-exam>수료 시험 보기</button>`;return}
   if(!certName&&st.user){try{const me=await st.user.me();certName=me?.name||""}catch(e){}}
   p.innerHTML=`<h4>수료를 축하합니다</h4><canvas id="certCanvas" style="width:100%;height:auto;border:1px solid var(--line);border-radius:6px" aria-label="수료증 미리보기"></canvas>
     <div class="proof" style="margin-top:8px"><label for="certName">수료증에 적을 이름</label><input id="certName" maxlength="20" value="${esc(certName)}">
@@ -690,7 +850,7 @@ function touch(){mine={...mine,weeks:{...mine.weeks,[weekKey(Date.now())]:true}}
 async function save(){
   touch();
   if(st.db&&st.uid){
-    try{await st.db.collection("crew").doc(st.uid).set({uid:st.uid,dept:mine.dept,stages:mine.stages,seen:mine.seen,likes:mine.likes,tried:mine.tried||{},weeks:mine.weeks,qs:mine.qs,ans:mine.ans,recs:mine.recs,cert:mine.cert,updatedAt:Date.now()})}
+    try{await st.db.collection("crew").doc(st.uid).set({uid:st.uid,dept:mine.dept,stages:mine.stages,seen:mine.seen,likes:mine.likes,tried:mine.tried||{},quiz:mine.quiz||{},exam:mine.exam||null,weeks:mine.weeks,qs:mine.qs,ans:mine.ans,recs:mine.recs,cert:mine.cert,updatedAt:Date.now()})}
     catch(err){$("#modeNote").textContent="저장하지 못했습니다("+(err?.code||"오류")+"). 잠시 후 다시 시도해 주세요."}
   }else{try{localStorage.setItem("axcrew4",JSON.stringify(mine))}catch(e){};st.docs=[{uid:"me",...mine}]}
 }
@@ -701,13 +861,21 @@ async function teamSet(id,data){
 }
 document.addEventListener("input",e=>{if(e.target.id==="certName"){certName=e.target.value.trim();const c=$("#certCanvas");if(c)drawCert(c)}});
 document.addEventListener("change",e=>{
+  const r=e.target;if(r.type==="radio"){const f=r.form;const j=+r.name.slice(1);
+    if(f&&f.id==="quizForm"){const k=f.dataset.k;st.qa[k]={...(st.qa[k]||{}),[j]:+r.value}}
+    if(f&&f.id==="examForm"&&!st.ex.res){st.ex.ans={...st.ex.ans,[j]:+r.value}}}
   if(e.target.id==="rtool"){st.rf.tool=e.target.value;renderMain()}
   if(e.target.id==="rsort"){st.rf.sort=e.target.value;renderMain()}
 });
 document.addEventListener("click",async e=>{
   const t=e.target.closest("button");if(!t)return;
   const tab=MODES.find(m=>t.id==="tab-"+m);if(tab)return setMode(tab);
-  if(t.dataset.go!=null){if(t.dataset.go==="recipes")return setMode("recipes");return goStage(+t.dataset.go)}
+  if(t.dataset.go!=null){if(t.dataset.go==="recipes")return setMode("recipes");if(t.dataset.go==="exam")return openExam();return goStage(+t.dataset.go)}
+  if(t.dataset.mode){return setMode(t.dataset.mode)}
+  if(t.hasAttribute("data-exam"))return openExam();
+  if(t.hasAttribute("data-exretry")){st.ex={ans:{},res:null};renderMain();window.scrollTo({top:$(".tabs").offsetTop-10,behavior:"smooth"});return}
+  if(t.dataset.bm){st.bm=t.dataset.bm;return render()}
+  if(t.hasAttribute("data-deptedit")){const md=$("#myDept");md.innerHTML=`<form id="deptForm"><input name="dept" maxlength="20" value="${esc(mine.dept)}" aria-label="소속 과" required><button class="mini" type="submit">저장</button></form>`;md.querySelector("input").focus();return}
   if(t.hasAttribute("data-copytaste")){const tx=TASTE[STAGES[st.stage].k]?.p||"";try{await navigator.clipboard.writeText(tx);t.textContent="복사했어요 · AI에 붙여 넣으세요"}catch(err){const pre=$("#tasteText");if(pre){const sel=getSelection();const rg=document.createRange();rg.selectNodeContents(pre);sel.removeAllRanges();sel.addRange(rg)}t.textContent="선택됨 · 복사하세요"}
     touch();setTimeout(()=>{t.textContent="예시 복사하기"},2200);return}
   if(t.dataset.tried){const k=t.dataset.tried;const tried={...(mine.tried||{})};if(tried[k])delete tried[k];else tried[k]=true;mine={...mine,tried};await save();return render()}
@@ -760,6 +928,18 @@ document.addEventListener("submit",async e=>{
     if(!title||!why)return;
     mine={...mine,recs:{...mine.recs,[rid()]:{stage:STAGES[st.stage].k,kind,title,url,len:kind==="video"?len:"",why,at:Date.now()}}};
     recOpen=false;await save();return render();}
+  if(f.id==="deptForm"){e.preventDefault();const v=f.dept.value.trim();if(!v)return;mine={...mine,dept:v};document.activeElement?.blur();await save();toast("소속 과를 저장했어요. 이제 우리 과 점수에 더해집니다!");return render()}
+  if(f.id==="quizForm"){e.preventDefault();const k=f.dataset.k,si=STAGES.findIndex(s=>s.k===k);const ans=st.qa[k]||{};
+    const ok=QUIZ[k].filter((q,j)=>ans[j]===rot(q,si*3+j).a).length;const tries=(st.qres[k]?.tries||0)+1;
+    if(ok===QUIZ[k].length){mine={...mine,quiz:{...(mine.quiz||{}),[k]:{at:Date.now(),tries}}};delete st.qres[k];await save();
+      toast(`어, 이게되네! ${STAGES[si].name} 확인 문제 통과 +${PT.quiz}점`+(stageOk(k)?` · ${STAGES[si].name} 단계 완성!`:""));return render()}
+    st.qres[k]={ok,tries};renderMain();document.getElementById("quizForm")?.scrollIntoView({behavior:"smooth",block:"start"});return}
+  if(f.id==="examForm"){e.preventDefault();const ex=mine.exam||{};const seed=ex.tries||0;const picked={...st.ex.ans};
+    const ok=EXAM.filter((q,j)=>picked[j]===rot(q,seed+j).a).length;const score=ok*10;
+    mine={...mine,exam:{best:Math.max(ex.best||0,score),last:score,tries:seed+1,at:Date.now(),passAt:ex.passAt||(score>=PASS?Date.now():null)}};
+    st.ex.res={score,picked,seed};await save();
+    toast(score>=PASS?`합격! ${score}점 · 열매를 맺었습니다. 수료증을 내려받으세요`:`${score}점 · ${PASS}점까지 조금 더! 해설 보고 다시 도전`);
+    render();window.scrollTo({top:$(".tabs").offsetTop-10,behavior:"smooth"});return}
   if(f.id==="askForm"){e.preventDefault();
     const text=f.text.value.trim();if(!text)return;
     mine={...mine,qs:{...mine.qs,[rid()]:{text,ref:f.ref.value,at:Date.now()}}};
@@ -772,7 +952,7 @@ document.addEventListener("submit",async e=>{
 
 (async function boot(){
   const h=(location.hash||"").slice(1);
-  if(["situation","recipes","qna"].includes(h)){st.mode=h;MODES.forEach(x=>$("#tab-"+x).setAttribute("aria-selected",h===x));$("#routeNav").hidden=true;$("#sitNav").hidden=h!=="situation"}
+  if(["situation","recipes","qna","board"].includes(h)){st.mode=h;MODES.forEach(x=>$("#tab-"+x).setAttribute("aria-selected",h===x));$("#routeNav").hidden=true;$("#sitNav").hidden=h!=="situation"}
   render();
   const [db,user]=await Promise.all([window.claude?.use?.("db")??null,window.claude?.use?.("user")??null]).catch(()=>[null,null]);
   st.user=user;
@@ -780,7 +960,7 @@ document.addEventListener("submit",async e=>{
   try{st.admin=user?!!(await user.canEdit()):false}catch(e){st.admin=false}
   if(!db||!uid){
     st.admin=false;
-    try{const s=JSON.parse(localStorage.getItem("axcrew4")||"null");if(s&&s.stages)mine={stages:s.stages||{},seen:s.seen||{},likes:s.likes||{},tried:s.tried||{},weeks:s.weeks||{},qs:s.qs||{},ans:s.ans||{},recs:s.recs||{},cert:s.cert||null,dept:s.dept||""}}catch(e){}
+    try{const s=JSON.parse(localStorage.getItem("axcrew4")||"null");if(s&&s.stages)mine={stages:s.stages||{},seen:s.seen||{},likes:s.likes||{},tried:s.tried||{},quiz:s.quiz||{},exam:s.exam||null,weeks:s.weeks||{},qs:s.qs||{},ans:s.ans||{},recs:s.recs||{},cert:s.cert||null,dept:s.dept||""}}catch(e){}
     st.docs=[{uid:"me",...mine}];
     $("#modeNote").textContent="지금은 이 브라우저에만 기록됩니다. claude.ai에 로그인해 열면 동료들과 함께 기록되고 AI혁신팀 검수를 받습니다.";
     return render();
@@ -792,7 +972,7 @@ document.addEventListener("submit",async e=>{
   db.collection("crew").onSnapshot(snap=>{
     st.docs=snap.docs.map(d=>({id:d.id,...d.data()}));
     const m=st.docs.find(d=>d.id===uid);
-    if(m)mine={stages:{...(m.stages||{})},seen:{...(m.seen||{})},likes:{...(m.likes||{})},tried:{...(m.tried||{})},weeks:{...(m.weeks||{})},qs:{...(m.qs||{})},ans:{...(m.ans||{})},recs:{...(m.recs||{})},cert:m.cert||null,dept:m.dept||""};
+    if(m)mine={stages:{...(m.stages||{})},seen:{...(m.seen||{})},likes:{...(m.likes||{})},tried:{...(m.tried||{})},quiz:{...(m.quiz||{})},exam:m.exam||null,weeks:{...(m.weeks||{})},qs:{...(m.qs||{})},ans:{...(m.ans||{})},recs:{...(m.recs||{})},cert:m.cert||null,dept:m.dept||""};
     rerender();
   },err=>{$("#modeNote").textContent="기록을 불러오지 못했습니다("+(err?.code||"오류")+")."});
   db.collection("team").onSnapshot(snap=>{const t={};snap.docs.forEach(d=>{t[d.id]=d.data()});st.team=t;rerender()},()=>{});
