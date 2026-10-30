@@ -83,10 +83,11 @@ Artifact 게시 시 `template/capabilities.json`을 그대로 `capabilities`로 
 ## 7. Vercel 개인 연습판 (2026-10-30~)
 
 - 주소: https://ax-eogedoene.vercel.app (Vercel 프로젝트 ax-eogedoene, 저장소 `site/` 폴더가 루트, main 커밋 시 자동 배포).
-- `site/index.html`은 `template/index.html`을 문서 골격(doctype·charset·viewport·설명·OG·파비콘)으로 감싼 파일이다. 본문은 직접 고치지 않는다. template을 고친 뒤 `<div class="wrap">` 앞에 `</head><body>`를 넣는 방식으로 다시 감싸고, template·site를 같은 작업에서 함께 커밋한다.
+- `site/index.html`은 `template/index.html`을 문서 골격(doctype·charset·viewport·설명·OG·파비콘·config.js)으로 감싼 파일이다. 본문은 직접 고치지 않는다. template을 고친 뒤 `<div class="wrap">` 앞에 `</head><body>`를 넣는 방식으로 다시 감싸고, template·site를 같은 작업에서 함께 커밋한다.
 - 공유 DB(`window.claude`)가 없으면 `st.solo=true` 개인 연습판으로 동작한다. 기록은 localStorage(`axcrew4`), 미션은 검수 없이 '스스로 확인'(statusOf가 ok), 수료증 대신 '학습 확인서'(발급 명의 '찾아가는 AX교실 · 개인 연습판'), 내려받기는 일반 a[download], 과 대항은 '함께 기록판에서 집계' 안내. 아티팩트 판 동작은 그대로다.
 - 일반 웹에서는 아티팩트 런타임이 주던 `[hidden]` 숨김이 없으므로 템플릿 CSS에 `[hidden]{display:none!important}`를 둔다(빼면 업무 상황 줄·토스트·검수함 탭이 드러난다).
-- 공개 사이트에 claude.ai 함께 기록판 주소를 걸지는 사용자 결정 전까지 하지 않는다(링크만 있으면 누구나 공유 DB에 쓸 수 있다).
+- 함께 기록판 연결(사용자 결정 2026-10-30 '기능에 맞는 방식'): 연습판 전체가 아니라 공유가 필요한 기능 자리에만 링크를 둔다. 검수 인증(인증 폼 아래), 과 대항(탭·오른쪽 칸), 공식 수료증(학습 확인서 칸), 안내문(modeNote 아래). 혼자 하는 기능(맛보기·영상·문제·시험·학습 확인서)은 연습판 안에서 끝난다. 링크 옆에 '중랑구청 직원용 · claude.ai 로그인 필요 · 연습판 기록은 옮겨지지 않아요'를 붙인다. 템플릿의 `SHARED()`/`goShared()`가 `st.solo`이고 `window.AX_SHARED_URL`이 있을 때만 그린다.
+- 주소는 저장소에 두지 않는다. Vercel 프로젝트 환경변수 `AX_SHARED_URL`(Config, Production)에 넣고, `site/build.js`가 빌드 때 `config.js`로 만든다(`site/vercel.json`: buildCommand `node build.js`, outputDirectory `.`, config.js no-store). `site/index.html` head에 `<script src="/config.js"></script>`. 주소를 바꾸면 환경변수를 고치고 Redeploy.
 - 확인: 배포 뒤 `https://ax-eogedoene.vercel.app/?t=…` 응답이 `site/index.html`과 같은지 대조한다.
 
 ## 변경 이력
@@ -95,3 +96,4 @@ Artifact 게시 시 `template/capabilities.json`을 그대로 `capabilities`로 
 - 2026-10-30 GPT 자문 반영: 첫 화면 '오늘, AI에게 어떤 일을 맡겨 볼까요?' 업무 카드, 단계별 5분 맛보기, 3문장 인증 폼과 검수 상태 문장, 레시피 '나도 해 봤어요'(tried), '지금 나는' 다음 한 걸음. 커밋 a73d984.
 - 2026-10-30 게이미피케이션(사용자 요청): 단계 확인 문제 3개(미션 인증+문제 = 단계 완성), 수료 시험 10문항 80점 이상, AX 포인트·도전 과제 8개, '과 대항 현황' LIVE 탭(합계/1인당, 순위 공개), 소속 과 처음부터 입력. 커밋 55f5d1d, 오탈자 수정 2ca2165. 아티팩트 버전 11.
 - 2026-10-30 Vercel 개인 연습판 발행(ax-eogedoene.vercel.app, site/ 폴더), 공유 DB 없을 때 스스로 확인·학습 확인서·일반 내려받기, [hidden] 규칙 명시. 커밋 b17eba1·950e5d0. 아티팩트 버전 12(재게시 중 생긴 비공개 중복본은 삭제, 다음부터 원래 주소를 지정해 재게시 요청).
+- 2026-10-30 연습판에 기능별 함께 기록판 링크(검수 인증·과 대항·공식 수료증·안내문), 주소는 Vercel 환경변수 AX_SHARED_URL → build.js → config.js. 커밋 5c77786·a2a2fa5, 아티팩트 버전 13(원래 주소 지정 재게시).
