@@ -180,7 +180,36 @@ details.faq .a::before{content:"A  ";font-family:var(--f-display);color:var(--te
 .recs{margin-top:22px;display:grid;gap:10px}
 .card.rec{border-style:dashed;border-color:var(--teal)}
 #certPanel canvas{display:block;max-width:100%}
-@media (max-width:900px){.main{grid-template-columns:1fr}aside{position:static}.how{grid-template-columns:1fr}header.top{grid-template-columns:1fr}}
+/* 2026-10-30 개선: 내 일로 시작하기 · 5분 맛보기 · 다음 한 걸음 · 나도 해봤어요 */
+.start{background:var(--surface);border:2px solid var(--ink);border-radius:14px;padding:16px 18px;margin:18px 0 12px}
+.start h2{font-family:var(--f-display);font-weight:400;font-size:24px;margin:0;line-height:1.25}
+.start>p{margin:2px 0 12px;color:var(--muted);font-size:14px}
+.starts{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.starts button{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;border:1.5px solid var(--line);background:var(--bg);color:var(--ink);border-radius:10px;padding:10px 12px;min-width:0}
+.starts button:hover{border-color:var(--coral)}
+.starts button b{font-size:14.5px;line-height:1.3}
+.starts button span{font-size:12px;color:var(--muted);line-height:1.35}
+.starts button .ic{color:var(--teal)}
+.howline{display:flex;flex-wrap:wrap;gap:6px 18px;margin:0 0 22px;font-size:13.5px;color:var(--muted)}
+.howline b{color:var(--ink)}
+.me .next{display:block;width:100%;text-align:left;margin-top:8px;border:1.5px solid var(--coral);background:var(--amber-soft);color:var(--ink);border-radius:8px;padding:7px 10px;font-size:13.5px;line-height:1.4}
+.me .next b{color:var(--coral)}
+details.grow{margin-top:8px}
+details.grow summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-weight:700}
+.taste{background:var(--surface);border:1px dashed var(--teal);border-radius:12px;padding:14px 16px;margin-bottom:14px;font-size:14px;display:grid;gap:8px}
+.taste>b{color:var(--teal)}
+.taste pre{margin:0;white-space:pre-wrap;overflow-wrap:anywhere;font-family:var(--f-body);font-size:13.5px;background:var(--bg);border-radius:8px;padding:10px 12px}
+.taste p{margin:0;font-size:13px;color:var(--muted)}
+.smission .one{font-size:13px;font-weight:700;color:var(--teal);font-family:var(--f-mono)}
+.status{font-size:13.5px;background:var(--surface);border-radius:8px;padding:8px 12px;margin:0;border-left:3px solid var(--amber)}
+.status.ok{border-left-color:var(--done)}.status.back{border-left-color:var(--coral)}
+.followstrip{display:flex;flex-wrap:wrap;gap:6px 14px;background:var(--teal-soft);border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:13.5px}
+.followstrip b{color:var(--teal)}
+.tried{border:1.5px solid var(--teal);color:var(--teal);background:transparent;border-radius:999px;padding:5px 12px;font-weight:700;font-size:13.5px}
+.tried[aria-pressed="true"]{background:var(--teal);color:#fff}
+.tried:disabled{opacity:.45;cursor:default}
+.dept li{grid-template-columns:1fr auto}
+@media (max-width:900px){.main{grid-template-columns:1fr}aside{position:static}header.top{grid-template-columns:1fr}.starts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 </style>
 
@@ -189,23 +218,29 @@ details.faq .a::before{content:"A  ";font-family:var(--f-display);color:var(--te
     <div>
       <div class="eyebrow">중랑구청 AI혁신팀 · 누가누배 — 누구나 가르치고 누구나 배운다</div>
       <h1>찾아가는 AX교실 <em>‘어, 이게되네?’</em></h1>
-      <p class="lede">강의실 대신 유튜브로 배웁니다. 10분이 넘지 않는 영상을 보고, 단계마다 결과물 하나를 직접 만들어 보여 주세요. “어, 이게 되네?” 하는 순간이 다섯 번 쌓이면 일하는 방식이 바뀝니다.</p>
+      <p class="lede">강의를 듣는 곳이 아닙니다. <b>내 일을 AI로 해 보는 곳</b>입니다. 강사를 기다리지 않아도 됩니다. 출퇴근길에 10분 이하 영상 하나, 자리에서 30분 미션 하나. “어, 이게 되네?” 하는 순간이 다섯 번 쌓이면 일하는 방식이 바뀝니다.</p>
     </div>
     <div class="me" aria-live="polite">
       <small>지금 나는</small>
       <div class="lv" id="myLevel">씨앗을 받기 전</div>
-      <div class="nums">단계 미션 <b id="myMission">0/5</b> · 본 영상 <b id="mySeen">0</b></div>
-      <div class="nums">출석 <b class="streak" id="myStreak">0주 연속</b> · 받은 ‘이게되네!’ <b id="myWow">0</b></div>
-      <div class="badges" id="badges" aria-label="받은 배지"></div>
+      <div class="nums">완성한 미션 <b id="myMission">0/5</b></div>
+      <button class="next" id="myNext" data-go="0"><b>다음 한 걸음</b> · 5분 맛보기로 AI에게 첫 일 맡기기</button>
+      <details class="grow"><summary>나의 성장 기록</summary>
+        <div class="badges" id="badges" aria-label="받은 배지"></div>
+        <div class="nums">본 영상 <b id="mySeen">0</b> · 출석 <b class="streak" id="myStreak">0주 연속</b></div>
+        <div class="nums">받은 ‘이게되네!’ <b id="myWow">0</b> · 내 레시피로 해 본 동료 <b id="myTaught">0</b></div>
+        <small>영상 수·출석은 참고 기록일 뿐, 수료는 완성한 미션으로만 판단합니다.</small>
+      </details>
       <small id="myDept" style="margin-top:6px">소속 과는 첫 인증 때 적어 주세요</small>
     </div>
   </header>
 
-  <div class="how">
-    <div><span>1</span><p style="margin:0"><b>본다</b> — 단계별 10분 이하 영상. 다 볼 필요 없이 미션에 필요한 것만 골라 보세요.</p></div>
-    <div><span>2</span><p style="margin:0"><b>만든다</b> — 단계 미션의 결과물을 내 업무로 직접 만들어 봅니다.</p></div>
-    <div><span>3</span><p style="margin:0"><b>나눈다</b> — 결과와 ‘레시피(이렇게 시켰어요)’를 올리면 AI혁신팀 확인 후 배지가 켜지고 레시피 서랍에 실립니다. 배지를 받은 단계에는 좋은 자료를 추천할 수 있고, 다섯 배지를 모으면 수료증을 받습니다.</p></div>
-  </div>
+  <section class="start" aria-labelledby="startTitle">
+    <h2 id="startTitle">오늘, AI에게 어떤 일을 맡겨 볼까요?</h2>
+    <p>내 일 하나를 고르면 그 일에 맞는 미션과 10분 이하 영상으로 안내합니다. 단계마다 결과물은 하나면 됩니다.</p>
+    <div class="starts" id="starts"></div>
+  </section>
+  <div class="howline"><span><b>① 5분 맛보기</b> 예시를 복사해 바로 시켜 보기</span><span><b>② 30분 미션</b> 내 업무로 결과물 1개</span><span><b>③ 나눈다</b> 레시피를 남기면 AI혁신팀 확인 후 배지·레시피 서랍</span><span><b>④ 가르친다</b> 배지 받은 단계는 동료에게 자료 추천·답하기</span></div>
 
   <div class="tabs" role="tablist">
     <button role="tab" id="tab-route" aria-selected="true">성장 5단계</button>
@@ -235,14 +270,14 @@ details.faq .a::before{content:"A  ";font-family:var(--f-display);color:var(--te
         <ul class="feed" id="feed"></ul>
       </div>
       <div class="panel">
-        <h4>과별 배지 현황</h4>
+        <h4>과별 참여 현황</h4>
         <ul class="dept" id="dept"></ul>
       </div>
       <p class="notice" id="modeNote">기록을 불러오는 중입니다…</p>
     </aside>
   </div>
 
-  <footer>영상은 공개 유튜브 채널의 콘텐츠이며 링크로만 연결합니다. 업무 자료를 AI에 넣을 때는 개인정보·비공개 정보를 반드시 지우고, AI 브라우저에는 업무 계정 로그인을 맡기지 마세요. 좋은 10분 영상을 발견하면 AI혁신팀에 제보해 주세요.</footer>
+  <footer>업무 PC에서 유튜브가 막히면 휴대폰으로 영상을 보고 미션은 PC에서 하세요. 영상은 공개 유튜브 채널의 콘텐츠이며 링크로만 연결합니다. 업무 자료를 AI에 넣을 때는 개인정보·비공개 정보를 반드시 지우고, AI 브라우저에는 업무 계정 로그인을 맡기지 마세요. 좋은 10분 영상을 발견하면 AI혁신팀에 제보해 주세요.</footer>
 </div>
 
 <script>
@@ -261,9 +296,25 @@ const STAGES=[
  {k:"s2",ic:"stem",name:"줄기",sub:"보이는 것 만들기",desc:"PPT·포스터·카드뉴스·오디오 요약. 주민과 동료가 바로 볼 수 있는 결과물을 만듭니다.",
   m:{title:"우리 과 사업 하나로 ‘보이는 결과물’ 만들기",steps:["우리 과 사업·행사 하나를 고른다","PPT, 포스터, 카드뉴스, 1분 오디오 요약 중 하나를 AI로 만든다","오탈자·사실관계를 사람이 꼭 확인한다"],out:"만든 결과물 종류와 공유 링크(있다면), 주변 반응 한 줄"}},
  {k:"s3",ic:"tree",name:"나무",sub:"브라우저에게 일 시키기",desc:"Aside 같은 AI 브라우저와 클로드 인 크롬. 클릭·검색·복사를 AI가 대신하는 걸 직접 봅니다.",
-  m:{title:"반복하던 웹 작업 하나를 AI 브라우저에게 시키기",steps:["AI 브라우저(Aside 등)나 클로드 인 크롬을 설치한다","반복 웹 작업 하나를 고른다(예: 다른 구청 보도자료 5건 찾아 표로 정리)","AI가 일하는 과정을 지켜보고 결과를 확인한다"],out:"시킨 일, AI가 해낸 것과 막힌 지점 한 줄"}},
+  m:{title:"반복하던 웹 작업 하나를 AI 브라우저에게 시키기",steps:["AI 브라우저(Aside 등)나 클로드 인 크롬을 설치한다","로그인 없이 되는 공개 웹 작업 하나를 고른다(예: 다른 구청 보도자료 5건 찾아 표로 정리)","AI가 일하는 과정을 지켜보고 결과를 확인한다"],out:"시킨 일, AI가 해낸 것과 막힌 지점 한 줄"}},
  {k:"s4",ic:"fruit",name:"열매",sub:"나만의 도구 만들기",desc:"젬·바이브코딩·코워크. 우리 과가 계속 쓸 작은 AI 도구를 만들어 동료에게 건넵니다.",
   m:{title:"우리 과가 계속 쓸 작은 AI 도구 만들어 건네기",steps:["우리 과 반복 업무를 하나 고른다","젬(Gem)·GPTs 같은 맞춤 AI나, 바이브코딩으로 작은 웹 도구를 만든다","동료 한 명에게 써 보게 하고 의견을 듣는다"],out:"만든 도구 이름과 링크(있다면), 써 본 동료의 한마디"}}
+];
+/* 5분 맛보기: 공개 예시 문장으로 바로 시켜 보는 복사용 요청 (인증 아님) */
+const TASTE={
+ s0:{p:"너는 구청 홍보담당이야. 아래 공문 문장을 어르신도 이해하기 쉬운 5줄 주민 안내문으로 바꿔 줘. 어려운 행정용어는 풀어서 써 줘.\n\n[예시] 동절기 한파 대응 계획에 따라 관내 경로당 및 동 주민센터를 한파쉼터로 지정·운영하오니 혼자 계신 어르신께서는 적극 이용하시기 바랍니다.",n:"챗GPT·클로드·제미나이 어느 것이든 됩니다. 답이 오면 ‘더 짧게’, ‘날짜는 굵게’처럼 한 번 더 시켜 보세요."},
+ s1:{p:"아래 회의 메모를 회의록 표로 정리해 줘. 칸은 안건 / 논의 내용 / 결정 사항 / 담당 / 기한. 정해지지 않은 칸은 ‘미정’으로 둠.\n\n[예시] 겨울 축제 준비 회의. 장소는 중랑천 일대로 하자는 의견. 예산은 다음 주까지 기획팀이 정리. 홍보는 12월 첫 주 시작, 홍보팀 담당. 안전요원 인원은 결정 못 함.",n:"나온 표를 엑셀이나 한글에 붙여 넣어 보세요. 실제 회의록이라면 이름은 직함으로 바꾼 뒤 넣습니다."},
+ s2:{p:"아래 행사 정보로 카드뉴스 5장 구성안을 만들어 줘. 장마다 제목 한 줄, 본문 두 줄, 넣을 그림 설명을 붙여 줘. 대상은 20~30대 주민이야.\n\n[예시] 겨울 별빛 산책, 12월 매주 금·토 저녁 6~9시, 중랑천 산책로, 무료, 따뜻한 차 나눔.",n:"구성안이 나오면 ‘이걸 PPT 한 장으로’나 ‘포스터 문구로’도 시켜 보세요. 예시 행사는 연습용입니다."},
+ s3:{p:"서울 자치구 세 곳의 구청 누리집에서 최근 보도자료 제목을 3건씩 찾아 표로 정리해 줘. 칸은 구 이름 / 날짜 / 제목 / 링크. 로그인이 필요한 곳은 들어가지 마.",n:"AI 브라우저(Aside 등)나 클로드 인 크롬에서 시켜 보세요. AI가 직접 클릭하는 걸 지켜보는 것이 맛보기입니다. 업무 계정 로그인은 맡기지 않습니다."},
+ s4:{p:"우리 과에서 매주 반복하는 ‘민원 답변 초안 쓰기’를 도와줄 맞춤 AI의 지침을 써 줘. 말투, 꼭 확인할 것, 하면 안 되는 것을 나눠서 10줄 안쪽으로.",n:"나온 지침을 제미나이 젬(Gem)이나 GPTs 만들기 화면에 붙여 넣으면 그것이 우리 과 첫 도구입니다."}
+};
+/* 내 일로 시작하기: 업무를 고르면 맞는 단계 미션으로 */
+const STARTS=[
+ {stage:0,ic:"seed",t:"AI가 처음이에요",d:"씨앗 · 5분 맛보기부터"},
+ {stage:1,ic:"sprout",t:"보고서·공문·엑셀·회의록",d:"새싹 · 문서 끝까지 완성"},
+ {stage:2,ic:"stem",t:"PPT·포스터·카드뉴스",d:"줄기 · 보이는 결과물"},
+ {stage:3,ic:"tree",t:"웹에서 찾고 모으는 일",d:"나무 · AI 브라우저에게"},
+ {stage:4,ic:"fruit",t:"매번 되풀이하는 일",d:"열매 · 우리 과 도구 만들기"}
 ];
 const SITS=[
  {k:"first",label:"AI가 처음이에요"},
@@ -326,7 +377,7 @@ function weekKey(t){const d=new Date(t);d.setHours(0,0,0,0);d.setDate(d.getDate(
 function streakOf(weeks){let n=0;const t=Date.now();for(let i=0;i<60;i++){const k=weekKey(t-i*7*864e5);if(weeks&&weeks[k])n++;else if(i>0)break}return n}
 const MODES=["route","situation","recipes","qna","review"];
 const st={mode:"route",stage:0,sit:"first",open:false,docs:[],team:{},uid:null,db:null,user:null,admin:false,names:{},rf:{stage:"all",tool:"all",sort:"wow"},qf:"all"};
-let mine={stages:{},seen:{},likes:{},weeks:{},qs:{},ans:{},recs:{},cert:null,dept:""};
+let mine={stages:{},seen:{},likes:{},tried:{},weeks:{},qs:{},ans:{},recs:{},cert:null,dept:""};
 let recOpen=false,certName="";
 const myId=()=>st.uid||"me";
 
@@ -347,8 +398,8 @@ function statusOf(uid,k,cert){
 const memoOf=(uid,k)=>(st.team["r~"+uid+"~"+k]||{}).memo||"";
 const teamDone=k=>st.docs.filter(d=>d.stages&&d.stages[k]&&statusOf(d.uid||d.id,k,d.stages[k])==="ok").length;
 function certs(){
-  const wow={};st.docs.forEach(d=>Object.keys(d.likes||{}).forEach(k=>{if(d.likes[k])wow[k]=(wow[k]||0)+1}));
-  const out=[];st.docs.forEach(d=>{const uid=d.uid||d.id;Object.entries(d.stages||{}).forEach(([k,m])=>{const s=STAGES.find(x=>x.k===k);if(s&&m&&m.note){const key=uid+"~"+k;out.push({key,uid,dept:d.dept,s,note:m.note,recipe:m.recipe||"",tool:m.tool||"",link:m.link,at:m.at||0,wow:wow[key]||0,status:statusOf(uid,k,m)})}})});
+  const wow={},tried={};st.docs.forEach(d=>{Object.keys(d.likes||{}).forEach(k=>{if(d.likes[k])wow[k]=(wow[k]||0)+1});Object.keys(d.tried||{}).forEach(k=>{if(d.tried[k])tried[k]=(tried[k]||0)+1})});
+  const out=[];st.docs.forEach(d=>{const uid=d.uid||d.id;Object.entries(d.stages||{}).forEach(([k,m])=>{const s=STAGES.find(x=>x.k===k);if(s&&m&&m.note){const key=uid+"~"+k;out.push({key,uid,dept:d.dept,s,note:m.note,recipe:m.recipe||"",tool:m.tool||"",link:m.link,at:m.at||0,wow:wow[key]||0,tried:tried[key]||0,status:statusOf(uid,k,m)})}})});
   return out;
 }
 const approved=()=>certs().filter(c=>c.status==="ok");
@@ -370,6 +421,14 @@ function renderStops(){
     return `<li><button aria-pressed="${st.stage===i}" data-stage="${i}">
       <span class="stop ${stt==="ok"?"full":""}">${ICON[s.ic]}</span>
       <strong>${esc(s.name)}</strong><span class="sub">${esc(s.sub)}</span><small>${stt==="ok"?"✓ 배지 획득":stt==="wait"?"검수 대기":stt==="back"?"보완 요청":"미션 대기"} · 동료 ${teamDone(s.k)}명</small></button></li>`}).join("");
+}
+function renderStarts(){
+  $("#starts").innerHTML=STARTS.map(s=>`<button data-go="${s.stage}">${ICON[s.ic]}<b>${esc(s.t)}</b><span>${esc(s.d)}</span></button>`).join("");
+}
+function goStage(i){
+  st.stage=i;st.open=false;
+  if(st.mode!=="route"){st.mode="route";MODES.forEach(x=>$("#tab-"+x).setAttribute("aria-selected",x==="route"));$("#routeNav").hidden=false;$("#sitNav").hidden=true;try{history.replaceState(null,"","#route")}catch(e){}}
+  render();const el=$("#stagehead");if(el)window.scrollTo({top:el.getBoundingClientRect().top+window.scrollY-12,behavior:"smooth"});
 }
 function renderSits(){
   $("#sitNav").innerHTML=SITS.map(s=>`<button aria-pressed="${st.sit===s.k}" data-sit="${s.k}">${esc(s.label)} <span style="opacity:.7">${V.filter(v=>v.sits.includes(s.k)).length}</span></button>`).join("");
@@ -396,36 +455,45 @@ const PILL={ok:'<span class="pill ok">인증 완료</span>',wait:'<span class="p
 function missionBox(i){
   const s=STAGES[i],m=s.m,done=mine.stages[s.k];const stt=statusOf(myId(),s.k,done);
   const form=st.open?`<form class="proof" id="proofForm">
-      ${mine.dept?"":`<input id="deptInput" name="dept" maxlength="20" placeholder="소속 과 (예: 일자리정책과)" required>`}
-      <label for="noteInput">결과 한 줄</label>
+      ${mine.dept?"":`<label for="deptInput">소속 과</label><input id="deptInput" name="dept" maxlength="20" placeholder="예: 일자리정책과" required>`}
+      <label for="noteInput">1. 무엇을 만들었나요? (필수)</label>
       <textarea id="noteInput" name="note" maxlength="300" placeholder="${esc(m.out)}" required>${esc(done?.note||"")}</textarea>
+      <label for="recipeInput">2. AI에게 어떻게 시켰나요? · 레시피 (요청문이나 순서, 개인정보 제외)</label>
+      <textarea id="recipeInput" name="recipe" maxlength="1500" placeholder="예) 1. 공문 본문을 붙여 넣고 ‘어르신도 이해하게 5줄로’라고 요청 2. ‘존댓말, 날짜는 굵게’로 다시 요청">${esc(done?.recipe||"")}</textarea>
+      <label for="linkInput">3. 결과물은 어디서 볼 수 있나요? (선택 · 공개해도 되는 링크만, 없으면 비워 두세요)</label>
+      <input id="linkInput" name="link" maxlength="300" placeholder="https://" value="${esc(done?.link||"")}">
       <label for="toolInput">주로 쓴 도구</label>
       <select id="toolInput" name="tool">${TOOLS.map(t=>`<option ${done?.tool===t?"selected":""}>${t}</option>`).join("")}</select>
-      <label for="recipeInput">레시피 · 이렇게 시켰어요 (프롬프트나 순서, 개인정보 제외)</label>
-      <textarea id="recipeInput" name="recipe" maxlength="1500" placeholder="예) 1. 공문 본문을 붙여 넣고 ‘어르신도 이해하게 5줄로’라고 요청 2. ‘존댓말, 날짜는 굵게’로 다시 요청">${esc(done?.recipe||"")}</textarea>
-      <input id="linkInput" name="link" maxlength="300" placeholder="결과물 링크 (선택 · 공개해도 되는 것만)" value="${esc(done?.link||"")}">
-      <div class="row"><button class="btn watch big" type="submit">${done?"고쳐서 다시 올리기":"AI혁신팀에 인증 요청"}</button><button class="btn" type="button" data-cancel>닫기</button></div>
-      ${done?`<p class="src">고쳐서 올리면 다시 검수를 받습니다.</p>`:""}</form>`
-    :`<div class="actions"><button class="btn ${stt==="ok"?"ok":"watch"} big" data-open>${done?"인증 고치기":"결과물 인증 요청"}</button><button class="btn big" data-ask="s:${s.k}">이 단계 질문하기</button></div>`;
-  return `${i===0?TIP:""}<div class="smission ${stt==="ok"?"is-done":""}">
-    <div class="tag">${esc(s.name)} 단계 미션 · 약 30분</div>
+      <p class="src">인증 내용은 AI혁신팀이 먼저 확인합니다. 승인 전에는 동료에게 보이지 않고, 승인되면 레시피가 서랍에 실립니다.${done?" 고쳐서 올리면 다시 확인합니다.":""}</p>
+      <div class="row"><button class="btn watch big" type="submit">${done?"고쳐서 다시 올리기":"AI혁신팀에 인증 요청"}</button><button class="btn" type="button" data-cancel>닫기</button></div></form>`
+    :`<div class="actions"><button class="btn ${stt==="ok"?"ok":"watch"} big" data-open>${stt==="back"?"메모대로 고쳐서 다시 올리기":done?"인증 고치기":"결과물 인증 요청"}</button><button class="btn big" data-ask="s:${s.k}">이 단계 질문하기</button></div>`;
+  const STATUS={wait:`<p class="status">${PILL.wait} AI혁신팀이 확인 중입니다. 아직 동료에게 공개되지 않았고, 승인되면 배지가 켜지고 레시피가 서랍에 실립니다. 그동안 다음 단계 5분 맛보기를 해 보세요.</p>`,
+    back:`<p class="status back">${PILL.back} AI혁신팀이 고칠 점을 남겼습니다. 메모대로 고쳐 다시 올리면 다시 확인합니다.</p>`,
+    ok:`<p class="status ok">${PILL.ok} 배지를 받았습니다. 레시피가 서랍에 실렸고, 이제 이 단계에 좋은 자료를 추천하거나 동료 질문에 답할 수 있어요.</p>`};
+  const tz=TASTE[s.k];
+  const taste=tz&&!done?`<div class="taste"><b>딱 5분, 먼저 시켜 보세요 · ${esc(s.name)} 맛보기</b><pre id="tasteText">${esc(tz.p)}</pre><p>${esc(tz.n)} 실제 개인정보나 비공개 자료 대신 위 예시로 해 보세요. 맛보기는 인증이 아닙니다.</p>
+    <div class="actions"><button class="btn" data-copytaste>예시 복사하기</button><button class="btn watch" data-open>되네요! 내 일로 미션 시작</button></div></div>`:"";
+  return `${i===0?TIP:""}${taste}<div class="smission ${stt==="ok"?"is-done":""}">
+    <div class="tag">${esc(s.name)} 단계 미션 · 이번 단계에서 만들 것은 딱 하나</div>
     <h3>${esc(m.title)}</h3>
+    <div class="one">실습 약 30분 · 결과물 1개 · 인증 1회</div>
     <ol>${m.steps.map(x=>`<li>${esc(x)}</li>`).join("")}</ol>
     <p class="out"><b>인증할 것:</b> ${esc(m.out)} + 레시피(이렇게 시켰어요)</p>
     <div class="picks">${V.filter(v=>v.stage===i).map(v=>`<span>${esc(v.make)}</span>`).join("")}</div>
-    ${done?`<div>${PILL[stt]}</div><p class="mynote">내 인증: ${esc(done.note)}</p>`:""}
+    ${done?`${STATUS[stt]}<p class="mynote">내 인증: ${esc(done.note)}</p>`:""}
     ${stt==="back"&&memoOf(myId(),s.k)?`<p class="backmemo">AI혁신팀 메모: ${esc(memoOf(myId(),s.k))}</p>`:""}
     ${form}
   </div>${i===4?NEXT:""}`;
 }
 function recipeCard(r){
-  const mineCard=r.uid===myId();const liked=!!mine.likes[r.key];const u=safeUrl(r.link);
+  const mineCard=r.uid===myId();const liked=!!mine.likes[r.key];const did=!!(mine.tried||{})[r.key];const u=safeUrl(r.link);
   return `<article class="rcard">
     <div class="who"><b>${esc(nameOf(r.uid))}</b>${r.dept?` · ${esc(r.dept)}`:""}</div>
     <div><span class="chip st">${esc(r.s.name)}</span> ${r.tool?`<span class="chip">${esc(r.tool)}</span>`:""} <span class="pill ok">AI혁신팀 인증</span></div>
     <p class="res">${esc(r.note)}</p>
     ${r.recipe?`<pre>${esc(r.recipe)}</pre>`:`<p class="why">레시피 없이 결과만 남겼어요.</p>`}
     <div class="actions">
+      <button class="tried" data-tried="${esc(r.key)}" aria-pressed="${did}" title="내 일에 실제로 따라 해 봤다면" ${mineCard?"disabled":""}>${did?"✓ ":""}나도 해 봤어요 ${r.tried}</button>
       <button class="wow" data-wow="${esc(r.key)}" aria-pressed="${liked}" ${mineCard?"disabled title=\"내 레시피\"":""}>이게되네! ${r.wow}</button>
       ${r.recipe?`<button class="btn" data-copy="${esc(r.key)}">레시피 복사</button>`:""}
       ${u?`<a class="btn" href="${esc(u)}" target="_blank" rel="noopener nofollow">결과물</a>`:""}
@@ -435,12 +503,12 @@ async function renderRecipes(){
   const f=st.rf;let list=approved();
   if(f.stage!=="all")list=list.filter(r=>r.s.k===f.stage);
   if(f.tool!=="all")list=list.filter(r=>r.tool===f.tool);
-  list.sort((a,b)=>f.sort==="wow"?(b.wow-a.wow)||(b.at-a.at):b.at-a.at);
-  $("#stagehead").innerHTML=`<h2>중랑 AI 레시피 서랍</h2><p>AI혁신팀이 확인한 동료들의 ‘이렇게 시켰어요’ 모음. 복사해서 써 보고, 되면 ‘이게되네!’를 눌러 주세요. 많이 받은 레시피는 분기 시상 후보가 됩니다.</p>`;
-  $("#missionBox").innerHTML=`<div class="filters">
+  list.sort((a,b)=>f.sort==="wow"?(b.wow-a.wow)||(b.at-a.at):f.sort==="tried"?(b.tried-a.tried)||(b.at-a.at):b.at-a.at);
+  $("#stagehead").innerHTML=`<h2>중랑 AI 레시피 서랍</h2><p>AI혁신팀이 확인한 동료들의 ‘이렇게 시켰어요’ 모음. 구경만 하지 말고 내 일에 따라 해 보세요. 따라 한 사람이 많은 레시피는 분기 시상 후보가 됩니다.</p>`;
+  $("#missionBox").innerHTML=`<div class="followstrip"><span><b>①</b> 공개해도 되는 자료나 예시 문장을 준비한다</span><span><b>②</b> 레시피를 복사해 AI에게 요청한다</span><span><b>③</b> 사실을 확인하고 우리 과에 맞게 고친 뒤 ‘나도 해 봤어요’</span></div><div class="filters">
     <button data-rs="all" aria-pressed="${f.stage==="all"}">전체</button>${STAGES.map(s=>`<button data-rs="${s.k}" aria-pressed="${f.stage===s.k}">${esc(s.name)}</button>`).join("")}
     <select id="rtool" aria-label="도구"><option value="all">모든 도구</option>${TOOLS.map(t=>`<option ${f.tool===t?"selected":""}>${t}</option>`).join("")}</select>
-    <select id="rsort" aria-label="정렬"><option value="wow" ${f.sort==="wow"?"selected":""}>이게되네 많은 순</option><option value="new" ${f.sort==="new"?"selected":""}>최신순</option></select></div>`;
+    <select id="rsort" aria-label="정렬"><option value="wow" ${f.sort==="wow"?"selected":""}>이게되네 많은 순</option><option value="tried" ${f.sort==="tried"?"selected":""}>따라 한 사람 많은 순</option><option value="new" ${f.sort==="new"?"selected":""}>최신순</option></select></div>`;
   $("#vhead").textContent=list.length?`레시피 ${list.length}개`:"";
   await loadNames(list.map(r=>r.uid));
   $("#cards").innerHTML=list.length?`<div class="recipes" style="grid-column:1/-1">${list.map(recipeCard).join("")}</div>`
@@ -503,7 +571,7 @@ function renderMain(){
   if(st.mode==="route"){const s=STAGES[st.stage];const list=V.filter(v=>v.stage===st.stage);
     $("#stagehead").innerHTML=`<h2>${esc(s.name)} · ${esc(s.sub)}</h2><p>${esc(s.desc)}</p>`;
     $("#missionBox").innerHTML=missionBox(st.stage);
-    $("#vhead").textContent=`미션을 돕는 영상 ${list.length}편 · 모두 10분 이하`;
+    $("#vhead").textContent=`막히는 부분에 필요한 영상만 골라 보세요 · ${list.length}편, 모두 10분 이하`;
     renderRecBox(st.stage);
     $("#cards").innerHTML=list.map(v=>videoCard(v,qcount)).join("");
   }else{const s=SITS.find(x=>x.k===st.sit);const list=V.filter(v=>v.sits.includes(s.k));
@@ -516,8 +584,14 @@ function renderMe(){
   const got=STAGES.filter(s=>statusOf(myId(),s.k,mine.stages[s.k])==="ok");const seen=Object.keys(mine.seen).filter(k=>mine.seen[k]&&V.some(v=>v.id===k)).length;
   $("#myMission").textContent=got.length+"/5";$("#mySeen").textContent=seen+"/"+V.length;
   $("#myStreak").textContent=streakOf(mine.weeks)+"주 연속";
-  $("#myWow").textContent=approved().filter(r=>r.uid===myId()).reduce((a,r)=>a+r.wow,0);
+  const myR=approved().filter(r=>r.uid===myId());
+  $("#myWow").textContent=myR.reduce((a,r)=>a+r.wow,0);$("#myTaught").textContent=myR.reduce((a,r)=>a+r.tried,0)+"명";
   const waiting=STAGES.some(s=>statusOf(myId(),s.k,mine.stages[s.k])==="wait");
+  const nx=$("#myNext");const ni=STAGES.findIndex(s=>statusOf(myId(),s.k,mine.stages[s.k])!=="ok");
+  if(ni<0){nx.dataset.go="4";nx.innerHTML=`<b>다음 한 걸음</b> · 수료증 받고, 동료 질문에 답해 주기`}
+  else{const s=STAGES[ni],sx=statusOf(myId(),s.k,mine.stages[s.k]);nx.dataset.go=String(ni);
+    nx.innerHTML=`<b>다음 한 걸음</b> · `+(sx==="wait"?`${esc(s.name)} 미션 확인 중 · 그동안 레시피 하나 따라 해 보기`:sx==="back"?`${esc(s.name)} 미션 메모대로 고쳐 다시 올리기`:ni===0?`5분 맛보기로 AI에게 첫 일 맡기기`:`${esc(s.name)} · ${esc(s.sub)}`);
+    if(sx==="wait")nx.dataset.go="recipes"}
   $("#myLevel").textContent=got.length===5?"열매를 맺은 AX 동료":got.length?got[got.length-1].name+" 배지 보유":(waiting?"첫 배지 검수 중":seen?"씨앗을 심는 중":"씨앗을 받기 전");
   $("#badges").innerHTML=STAGES.map(s=>{const stt=statusOf(myId(),s.k,mine.stages[s.k]);return `<span class="badge ${stt==="ok"?"on":stt?"wait":""}" title="${esc(s.name)} 배지${stt==="wait"?" (검수 대기)":stt==="back"?" (보완 요청)":""}">${ICON[s.ic]}</span>`}).join("");
   $("#myDept").textContent=mine.dept||"소속 과는 첫 인증 때 적어 주세요";
@@ -531,12 +605,12 @@ async function renderSide(){
   const fe=$("#featured");
   if(month){fe.hidden=false;fe.innerHTML=`<h4>${now.getMonth()+1}월의 레시피</h4><div><span class="chip st">${esc(month.s.name)}</span> ${month.tool?`<span class="chip">${esc(month.tool)}</span>`:""}</div><p class="res">“${esc(month.note)}”</p><span class="src">${esc(nameOf(month.uid))}${month.dept?" · "+esc(month.dept):""} · 이게되네! ${month.wow}</span>`}
   else fe.hidden=true;
-  $("#feed").innerHTML=items.length?items.map(i=>`<li><b>${esc(nameOf(i.uid))}</b>${i.dept?` <span class="t">${esc(i.dept)}</span>`:""} · <span class="t">${esc(i.s.name)} 배지</span><br>“${esc(i.note)}”<br><span class="t">${i.recipe?"레시피 있음 · ":""}이게되네 ${i.wow} · ${ago(i.at)}</span></li>`).join("")
+  $("#feed").innerHTML=items.length?items.map(i=>`<li><b>${esc(nameOf(i.uid))}</b>${i.dept?` <span class="t">${esc(i.dept)}</span>`:""} · <span class="t">${esc(i.s.name)} 배지</span><br>“${esc(i.note)}”<br><span class="t">${i.recipe?"레시피 있음 · ":""}${i.tried?"따라 함 "+i.tried+" · ":""}이게되네 ${i.wow} · ${ago(i.at)}</span></li>`).join("")
     :`<p class="empty">아직 인증된 결과물이 없습니다. 씨앗 단계 미션으로 첫 결과물을 올려 주세요.</p>`;
-  const by={};all.forEach(c=>{if(c.dept)by[c.dept]=(by[c.dept]||0)+1});
-  const rows=Object.entries(by).sort((a,b)=>b[1]-a[1]).slice(0,10);const mx=Math.max(1,...rows.map(r=>r[1]));
-  $("#dept").innerHTML=rows.length?rows.map(([k,n])=>`<li><span>${esc(k)}</span><span class="b" style="width:${n/mx*100}%"></span><span class="n">${n}</span></li>`).join("")
-    :`<p class="empty">과별로 인증받은 배지 수가 여기에 쌓입니다.</p>`;
+  const by={};all.forEach(c=>{if(c.dept){const o=by[c.dept]=by[c.dept]||{p:new Set(),n:0,t:0};o.p.add(c.uid);o.n++;o.t+=c.tried}});
+  const rows=Object.entries(by).sort((a,b)=>a[0].localeCompare(b[0],"ko"));
+  $("#dept").innerHTML=rows.length?rows.map(([k,o])=>`<li><span>${esc(k)}</span><span class="n">${o.p.size}명 · 사례 ${o.n}${o.t?" · 따라 함 "+o.t:""}</span></li>`).join("")+`<p class="src">가나다순 · 순위가 아니라 어느 과에서 누가 해 봤는지 보는 지도입니다.</p>`
+    :`<p class="empty">과별로 참여한 사람과 인증 사례가 여기에 쌓입니다.</p>`;
 }
 /* 누가누배 동료 추천: 배지를 받은 단계에 자료를 추천, AI혁신팀 승인 후 공개 */
 const parseLen=s=>{const m=String(s||"").trim().match(/^(\d{1,2}):([0-5]\d)$/);return m?(+m[1])*60+(+m[2]):null};
@@ -610,13 +684,13 @@ async function renderCert(){
     <div class="row"><button class="btn watch" data-certdl>수료증 내려받기 (PNG)</button></div><p class="src" id="certMsg"></p></div>`;
   drawCert($("#certCanvas"));
 }
-function render(){renderStops();renderSits();renderMain();renderMe();renderSide();renderCert()}
+function render(){renderStarts();renderStops();renderSits();renderMain();renderMe();renderSide();renderCert()}
 
 function touch(){mine={...mine,weeks:{...mine.weeks,[weekKey(Date.now())]:true}}}
 async function save(){
   touch();
   if(st.db&&st.uid){
-    try{await st.db.collection("crew").doc(st.uid).set({uid:st.uid,dept:mine.dept,stages:mine.stages,seen:mine.seen,likes:mine.likes,weeks:mine.weeks,qs:mine.qs,ans:mine.ans,recs:mine.recs,cert:mine.cert,updatedAt:Date.now()})}
+    try{await st.db.collection("crew").doc(st.uid).set({uid:st.uid,dept:mine.dept,stages:mine.stages,seen:mine.seen,likes:mine.likes,tried:mine.tried||{},weeks:mine.weeks,qs:mine.qs,ans:mine.ans,recs:mine.recs,cert:mine.cert,updatedAt:Date.now()})}
     catch(err){$("#modeNote").textContent="저장하지 못했습니다("+(err?.code||"오류")+"). 잠시 후 다시 시도해 주세요."}
   }else{try{localStorage.setItem("axcrew4",JSON.stringify(mine))}catch(e){};st.docs=[{uid:"me",...mine}]}
 }
@@ -633,6 +707,10 @@ document.addEventListener("change",e=>{
 document.addEventListener("click",async e=>{
   const t=e.target.closest("button");if(!t)return;
   const tab=MODES.find(m=>t.id==="tab-"+m);if(tab)return setMode(tab);
+  if(t.dataset.go!=null){if(t.dataset.go==="recipes")return setMode("recipes");return goStage(+t.dataset.go)}
+  if(t.hasAttribute("data-copytaste")){const tx=TASTE[STAGES[st.stage].k]?.p||"";try{await navigator.clipboard.writeText(tx);t.textContent="복사했어요 · AI에 붙여 넣으세요"}catch(err){const pre=$("#tasteText");if(pre){const sel=getSelection();const rg=document.createRange();rg.selectNodeContents(pre);sel.removeAllRanges();sel.addRange(rg)}t.textContent="선택됨 · 복사하세요"}
+    touch();setTimeout(()=>{t.textContent="예시 복사하기"},2200);return}
+  if(t.dataset.tried){const k=t.dataset.tried;const tried={...(mine.tried||{})};if(tried[k])delete tried[k];else tried[k]=true;mine={...mine,tried};await save();return render()}
   if(t.dataset.stage!=null){st.stage=+t.dataset.stage;st.open=false;return render()}
   if(t.dataset.sit){st.sit=t.dataset.sit;return render()}
   if(t.dataset.rs){st.rf.stage=t.dataset.rs;return renderMain()}
@@ -702,7 +780,7 @@ document.addEventListener("submit",async e=>{
   try{st.admin=user?!!(await user.canEdit()):false}catch(e){st.admin=false}
   if(!db||!uid){
     st.admin=false;
-    try{const s=JSON.parse(localStorage.getItem("axcrew4")||"null");if(s&&s.stages)mine={stages:s.stages||{},seen:s.seen||{},likes:s.likes||{},weeks:s.weeks||{},qs:s.qs||{},ans:s.ans||{},recs:s.recs||{},cert:s.cert||null,dept:s.dept||""}}catch(e){}
+    try{const s=JSON.parse(localStorage.getItem("axcrew4")||"null");if(s&&s.stages)mine={stages:s.stages||{},seen:s.seen||{},likes:s.likes||{},tried:s.tried||{},weeks:s.weeks||{},qs:s.qs||{},ans:s.ans||{},recs:s.recs||{},cert:s.cert||null,dept:s.dept||""}}catch(e){}
     st.docs=[{uid:"me",...mine}];
     $("#modeNote").textContent="지금은 이 브라우저에만 기록됩니다. claude.ai에 로그인해 열면 동료들과 함께 기록되고 AI혁신팀 검수를 받습니다.";
     return render();
@@ -714,7 +792,7 @@ document.addEventListener("submit",async e=>{
   db.collection("crew").onSnapshot(snap=>{
     st.docs=snap.docs.map(d=>({id:d.id,...d.data()}));
     const m=st.docs.find(d=>d.id===uid);
-    if(m)mine={stages:{...(m.stages||{})},seen:{...(m.seen||{})},likes:{...(m.likes||{})},weeks:{...(m.weeks||{})},qs:{...(m.qs||{})},ans:{...(m.ans||{})},recs:{...(m.recs||{})},cert:m.cert||null,dept:m.dept||""};
+    if(m)mine={stages:{...(m.stages||{})},seen:{...(m.seen||{})},likes:{...(m.likes||{})},tried:{...(m.tried||{})},weeks:{...(m.weeks||{})},qs:{...(m.qs||{})},ans:{...(m.ans||{})},recs:{...(m.recs||{})},cert:m.cert||null,dept:m.dept||""};
     rerender();
   },err=>{$("#modeNote").textContent="기록을 불러오지 못했습니다("+(err?.code||"오류")+")."});
   db.collection("team").onSnapshot(snap=>{const t={};snap.docs.forEach(d=>{t[d.id]=d.data()});st.team=t;rerender()},()=>{});
