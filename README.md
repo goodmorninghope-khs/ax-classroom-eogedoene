@@ -4,12 +4,15 @@
 
 > 사과 속 씨앗은 셀 수 있지만, 씨앗 속 사과는 셀 수 없다.
 
+**바로 해 보기(개인 연습판):** https://ax-eogedoene.vercel.app — 로그인 없이 이 브라우저에 기록되고, 끝까지 마치면 학습 확인서를 받습니다. 동료와 함께 기록·검수·과 대항은 AI혁신팀이 안내하는 claude.ai 판에서 합니다.
+
 ## 들어 있는 것
 
 | 경로 | 내용 |
 |---|---|
 | `SKILL.md` | 스킬 본문. 큐레이션 원칙, 영상 찾는 절차, 사이트 구성, 데이터·권한, 게시·확인 순서 |
 | `template/index.html` | 사이트 원본(Claude 아티팩트용, 문서 골격 없이 본문만) |
+| `site/index.html`, `site/vercel.json` | Vercel 배포본(template을 문서 골격으로 감싼 파일, 프로젝트 루트 = `site/`) |
 | `template/capabilities.json` | 아티팩트 게시 때 넘기는 런타임 권한(db 규칙, user, downloads) |
 
 ## 사이트 한눈에

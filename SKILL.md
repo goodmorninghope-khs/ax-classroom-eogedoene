@@ -11,7 +11,7 @@ description: 유튜브 영상을 단계별·업무 상황별로 큐레이션하�
 
 사이트를 고치는 작업은 아래가 모두 끝나야 완료다. 하나라도 빠지면 완료라고 보고하지 않는다.
 
-1. 템플릿: 저장소 `template/index.html`(그리고 이 스킬을 설치해 둔 다른 도구의 사본)을 게시본과 같은 파일로 맞춘다. 권한이 바뀌면 `capabilities.json`도 맞춘다.
+1. 템플릿: (Vercel 배포본 `site/index.html`도 같이 다시 감싼다) 저장소 `template/index.html`(그리고 이 스킬을 설치해 둔 다른 도구의 사본)을 게시본과 같은 파일로 맞춘다. 권한이 바뀌면 `capabilities.json`도 맞춘다.
 2. 설명: SKILL.md의 사이트 구성·데이터 스키마·원칙을 바뀐 대로 고치고, 맨 아래 '변경 이력'에 한 줄을 더한다(Aside본·저장소본 둘 다).
 3. README: 저장소 README의 '사이트 한눈에'가 바뀐 기능을 담는지 확인한다.
 4. 확인: 게시본·GitHub 원본·Aside 템플릿이 같은 파일인지 대조하고(sha256 또는 문자열 비교), 결과를 사용자에게 한 줄로 알린다.
@@ -80,8 +80,18 @@ Artifact 게시 시 `template/capabilities.json`을 그대로 `capabilities`로 
 - 소상공인용 ‘골목 교실’: 대상·미션을 장사 업무(메뉴판, 리뷰 답글, 배달앱 정산, 전단)로 바꾸고, 검수는 지원기관 담당자, 과 대항 대신 업종·동네 대항(같은 LIVE 표).
 - 문체가 필요한 안내문·홍보 글은 golmok-writer 스킬과 함께 쓴다.
 
+## 7. Vercel 개인 연습판 (2026-10-30~)
+
+- 주소: https://ax-eogedoene.vercel.app (Vercel 프로젝트 ax-eogedoene, 저장소 `site/` 폴더가 루트, main 커밋 시 자동 배포).
+- `site/index.html`은 `template/index.html`을 문서 골격(doctype·charset·viewport·설명·OG·파비콘)으로 감싼 파일이다. 본문은 직접 고치지 않는다. template을 고친 뒤 `<div class="wrap">` 앞에 `</head><body>`를 넣는 방식으로 다시 감싸고, template·site를 같은 작업에서 함께 커밋한다.
+- 공유 DB(`window.claude`)가 없으면 `st.solo=true` 개인 연습판으로 동작한다. 기록은 localStorage(`axcrew4`), 미션은 검수 없이 '스스로 확인'(statusOf가 ok), 수료증 대신 '학습 확인서'(발급 명의 '찾아가는 AX교실 · 개인 연습판'), 내려받기는 일반 a[download], 과 대항은 '함께 기록판에서 집계' 안내. 아티팩트 판 동작은 그대로다.
+- 일반 웹에서는 아티팩트 런타임이 주던 `[hidden]` 숨김이 없으므로 템플릿 CSS에 `[hidden]{display:none!important}`를 둔다(빼면 업무 상황 줄·토스트·검수함 탭이 드러난다).
+- 공개 사이트에 claude.ai 함께 기록판 주소를 걸지는 사용자 결정 전까지 하지 않는다(링크만 있으면 누구나 공유 DB에 쓸 수 있다).
+- 확인: 배포 뒤 `https://ax-eogedoene.vercel.app/?t=…` 응답이 `site/index.html`과 같은지 대조한다.
+
 ## 변경 이력
 
 - 2026-10-29 저장소 생성, Aside 스킬로 설치(template/ 정리).
 - 2026-10-30 GPT 자문 반영: 첫 화면 '오늘, AI에게 어떤 일을 맡겨 볼까요?' 업무 카드, 단계별 5분 맛보기, 3문장 인증 폼과 검수 상태 문장, 레시피 '나도 해 봤어요'(tried), '지금 나는' 다음 한 걸음. 커밋 a73d984.
 - 2026-10-30 게이미피케이션(사용자 요청): 단계 확인 문제 3개(미션 인증+문제 = 단계 완성), 수료 시험 10문항 80점 이상, AX 포인트·도전 과제 8개, '과 대항 현황' LIVE 탭(합계/1인당, 순위 공개), 소속 과 처음부터 입력. 커밋 55f5d1d, 오탈자 수정 2ca2165. 아티팩트 버전 11.
+- 2026-10-30 Vercel 개인 연습판 발행(ax-eogedoene.vercel.app, site/ 폴더), 공유 DB 없을 때 스스로 확인·학습 확인서·일반 내려받기, [hidden] 규칙 명시. 커밋 b17eba1·950e5d0. 아티팩트 버전 12(재게시 중 생긴 비공개 중복본은 삭제, 다음부터 원래 주소를 지정해 재게시 요청).
