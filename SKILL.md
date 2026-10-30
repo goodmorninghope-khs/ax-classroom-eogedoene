@@ -45,12 +45,15 @@ description: 유튜브 영상을 단계별·업무 상황별로 큐레이션하�
 - 레시피 서랍: 따라 하는 법 3단계 띠, 카드마다 '나도 해 봤어요 n'(실제 재사용, 시상 근거)과 '이게되네! n'(공감), 정렬에 '따라 한 사람 많은 순'.
 - 오른쪽: 수료증 패널, ○월의 레시피, 동료 결과물 피드(따라 함 n), 과별 참여 현황(가나다순, 참여 인원·사례·따라 함. 순위로 보이지 않게)
 - 내 상태: 지금 나는(레벨), 완성한 미션 n/5, '다음 한 걸음' 버튼(첫 미완료 단계로, 검수 대기면 레시피 서랍으로). 배지·본 영상·출석·이게되네·'내 레시피로 해 본 동료'는 접힌 '나의 성장 기록'에. 영상 수·출석은 수료 판단에 쓰지 않는다.
+- 게이미피케이션(2026-10-30 사용자 요청): 단계 완성 = 미션 인증(검수 승인) + 단계 확인 문제 3개 모두 정답(QUIZ, 틀리면 힌트 보고 즉시 재도전, 영상·미션은 잠그지 않음). 다섯 단계 완성 후 수료 시험(EXAM 상황형 10문항, 80점 이상, 재도전마다 보기 순서 회전) 통과 시 수료증. AX 포인트(영상 5·문제 20·인증 50·따라 하기 10·내 레시피를 동료가 따라 함 30·질문 5·답 10·수료 100)와 도전 과제 8개(첫 발자국·문제왕·첫 배지·따라쟁이·누가누배 선생님·친절한 동료·꾸준함·열매를 맺다), 통과 때 토스트 알림.
+- 과 대항 현황 탭(LIVE): 과별 포인트 합계/1인당 전환, 순위·막대·참여·본 영상·문제 통과·완성 단계·따라 함·수료 인원, 우리 과 강조. 오른쪽에 상위 5개 미니 막대. 경쟁 유도는 의도(사용자 결정), 인원 차이는 1인당 보기로 보완. 소속 과는 '지금 나는' 칸에서 처음부터 적는다.
+- 한계: 문제 정답과 포인트 근거(봤어요 등)는 클라이언트·본인 문서 기반이라 마음먹으면 조작 가능. 시상 근거는 검수 승인과 '나도 해 봤어요'를 우선한다.
 
 ## 4. 데이터와 권한
 
 Artifact 게시 시 `template/capabilities.json`을 그대로 `capabilities`로 넘긴다.
 
-- `crew/{uid}` (본인만 쓰기): `dept, stages{s0..s4:{note,tool,recipe,link,at}}, seen{videoId}, likes{key}, tried{key}, weeks{YYYY-Www}, qs{qid:{text,ref,at}}, ans{aid:{q,text,at}}, recs{rid:{stage,kind,title,url,len,why,at}}, cert{at}`
+- `crew/{uid}` (본인만 쓰기): `dept, stages{s0..s4:{note,tool,recipe,link,at}}, seen{videoId}, likes{key}, tried{key}, quiz{sK:{at,tries}}, exam{best,last,tries,at,passAt}, weeks{YYYY-Www}, qs{qid:{text,ref,at}}, ans{aid:{q,text,at}}, recs{rid:{stage,kind,title,url,len,why,at}}, cert{at}`
 - `team/*` (편집 권한자만 쓰기): `r~uid~sK` 인증 검수, `c~uid~rid` 추천 검수 `{status:"ok"|"back", memo, forAt}`, `q~qkey` FAQ `{faq, best}`
 - 승인 판정은 `forAt === 해당 항목 at`일 때만 유효. 고쳐 올리면 자동 재검수.
 - 동료 추천은 그 단계 배지(승인)를 받은 사람만 가능, 영상은 길이 `m:ss` 필수·600초 이하.
