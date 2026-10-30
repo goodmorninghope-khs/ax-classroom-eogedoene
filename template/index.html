@@ -242,6 +242,8 @@ details.grow summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-wei
 .board td.barc{width:28%;min-width:90px}
 .board tr.mine td{background:var(--amber-soft)}
 .boardwrap{overflow-x:auto;grid-column:1/-1}
+.together{display:grid;gap:4px;margin:8px 0 4px}
+.together .btn{justify-self:start}
 #myDept form{display:flex;gap:6px;margin-top:2px}
 #myDept input{flex:1;min-width:0;font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
 @media (max-width:900px){.main{grid-template-columns:1fr}aside{position:static}header.top{grid-template-columns:1fr}.starts{grid-template-columns:repeat(2,minmax(0,1fr))}}
@@ -461,6 +463,9 @@ const CFAQ=[
 const $=s=>document.querySelector(s);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const safeUrl=u=>{try{const x=new URL(u);return /^https?:$/.test(x.protocol)?x.href:""}catch(e){return ""}};
+/* 개인 연습판(일반 웹 배포)에서만: 공유가 필요한 기능 자리에 함께 기록판으로 잇는다. 주소는 배포 환경이 window.AX_SHARED_URL로 넣는다(템플릿·저장소에는 없음) */
+const SHARED=()=>st.solo?safeUrl(window.AX_SHARED_URL||""):"";
+const goShared=(label,why)=>{const u=SHARED();return u?`<div class="together"><a class="btn watch" href="${esc(u)}" target="_blank" rel="noopener">${esc(label)} →</a><span class="src">${why?esc(why)+" · ":""}중랑구청 직원용 · claude.ai 로그인 필요 · 연습판 기록은 옮겨지지 않아요</span></div>`:""};
 const rid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,6);
 function weekKey(t){const d=new Date(t);d.setHours(0,0,0,0);d.setDate(d.getDate()+3-((d.getDay()+6)%7));const w1=new Date(d.getFullYear(),0,4);return d.getFullYear()+"-W"+String(1+Math.round(((d-w1)/864e5-3+((w1.getDay()+6)%7))/7)).padStart(2,"0")}
 function streakOf(weeks){let n=0;const t=Date.now();for(let i=0;i<60;i++){const k=weekKey(t-i*7*864e5);if(weeks&&weeks[k])n++;else if(i>0)break}return n}
@@ -579,8 +584,8 @@ function missionBox(i){
       <input id="linkInput" name="link" maxlength="300" placeholder="https://" value="${esc(done?.link||"")}">
       <label for="toolInput">주로 쓴 도구</label>
       <select id="toolInput" name="tool">${TOOLS.map(t=>`<option ${done?.tool===t?"selected":""}>${t}</option>`).join("")}</select>
-      <p class="src">${st.solo?"개인 연습판에서는 검수 없이 이 브라우저에만 기록됩니다. 스스로 확인한 결과물로 칩니다.":"인증 내용은 AI혁신팀이 먼저 확인합니다. 승인 전에는 동료에게 보이지 않고, 승인되면 레시피가 서랍에 실립니다."+(done?" 고쳐서 올리면 다시 확인합니다.":"")}</p>
-      <div class="row"><button class="btn watch big" type="submit">${st.solo?(done?"고쳐서 다시 기록":"해 봤어요, 기록하기"):done?"고쳐서 다시 올리기":"AI혁신팀에 인증 요청"}</button><button class="btn" type="button" data-cancel>닫기</button></div></form>`
+      <p class="src">${st.solo?"개인 연습판에서는 검수 없이 이 브라우저에만 기록됩니다. 스스로 확인한 결과물로 칩니다."+(SHARED()?" AI혁신팀 검수를 받아 배지·레시피 서랍·시상에 올리려면 함께 기록판에서 인증하세요.":""):"인증 내용은 AI혁신팀이 먼저 확인합니다. 승인 전에는 동료에게 보이지 않고, 승인되면 레시피가 서랍에 실립니다."+(done?" 고쳐서 올리면 다시 확인합니다.":"")}</p>
+      <div class="row"><button class="btn watch big" type="submit">${st.solo?(done?"고쳐서 다시 기록":"해 봤어요, 기록하기"):done?"고쳐서 다시 올리기":"AI혁신팀에 인증 요청"}</button><button class="btn" type="button" data-cancel>닫기</button></div>${goShared("함께 기록판에서 검수 인증받기","배지·레시피 서랍·시상")}</form>`
     :`<div class="actions"><button class="btn ${stt==="ok"?"ok":"watch"} big" data-open>${stt==="back"?"메모대로 고쳐서 다시 올리기":done?"인증 고치기":"결과물 인증 요청"}</button><button class="btn big" data-ask="s:${s.k}">이 단계 질문하기</button></div>`;
   const STATUS={wait:`<p class="status">${PILL.wait} AI혁신팀이 확인 중입니다. 아직 동료에게 공개되지 않았고, 승인되면 배지가 켜지고 레시피가 서랍에 실립니다. 그동안 다음 단계 5분 맛보기를 해 보세요.</p>`,
     back:`<p class="status back">${PILL.back} AI혁신팀이 고칠 점을 남겼습니다. 메모대로 고쳐 다시 올리면 다시 확인합니다.</p>`,
@@ -705,7 +710,7 @@ function renderExam(){
     <div class="actions">${res?`<button class="btn watch big" type="button" data-exretry>${res.score>=PASS?"한 번 더 풀어 보기":"다시 도전"}</button>`:`<button class="btn watch big" type="submit">제출하고 채점하기</button>`}</div></form>`;
 }
 async function renderBoard(){
-  if(st.solo){$("#stagehead").innerHTML=`<h2>과 대항 현황</h2><p>과 대항은 동료 기록이 함께 쌓이는 판에서 집계됩니다. 지금 화면은 개인 연습판이라 내 기록만 있어요. AI혁신팀이 안내하는 함께 기록판(claude.ai)에서 우리 과 점수를 올려 보세요.</p>`;$("#missionBox").innerHTML="";$("#vhead").textContent="";$("#cards").innerHTML="";return}
+  if(st.solo){$("#stagehead").innerHTML=`<h2>과 대항 현황</h2><p>과 대항은 동료 기록이 함께 쌓이는 판에서 집계됩니다. 지금 화면은 개인 연습판이라 내 기록만 있어요. AI혁신팀이 안내하는 함께 기록판(claude.ai)에서 우리 과 점수를 올려 보세요.</p>`;$("#missionBox").innerHTML=goShared("함께 기록판에서 우리 과 점수 올리기","실시간 과 대항");$("#vhead").textContent="";$("#cards").innerHTML="";return}
   const {rows,key}=deptRows();const mx=Math.max(1,...rows.map(r=>r[key]));
   $("#stagehead").innerHTML=`<h2>과 대항 현황 <span class="live">LIVE</span></h2><p>어느 과가 가장 많이 배우고 만들고 가르치고 있을까요? 동료가 영상을 보고, 문제를 풀고, 레시피를 따라 할 때마다 바로 바뀝니다. 인원이 적은 과는 ‘1인당’으로 보면 공평합니다.</p>`;
   $("#missionBox").innerHTML=`<div class="filters"><button data-bm="sum" aria-pressed="${st.bm==="sum"}">AX 포인트 합계</button><button data-bm="avg" aria-pressed="${st.bm==="avg"}">1인당 포인트</button></div>`;
@@ -770,7 +775,7 @@ async function renderSide(){
     :`<p class="empty">아직 인증된 결과물이 없습니다. 씨앗 단계 미션으로 첫 결과물을 올려 주세요.</p>`;
   const {rows,key}=deptRows();const top=rows.slice(0,5);const mx=Math.max(1,...top.map(r=>r[key]));
   const d=$("#dept");d.className="mini-board";
-  if(st.solo){d.innerHTML=`<p class="empty">과 대항은 함께 기록판(claude.ai)에서 집계됩니다. 지금은 개인 연습판이에요.</p>`;return}
+  if(st.solo){d.innerHTML=`<p class="empty">과 대항은 함께 기록판(claude.ai)에서 집계됩니다. 지금은 개인 연습판이에요.</p>${goShared("과 대항 보러 가기")}`;return}
   d.innerHTML=top.length?top.map((r,i)=>`<li><span class="rk ${i<3?"r"+(i+1):""}">${i+1}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.dept===mine.dept?"<b>"+esc(r.dept)+"</b>":esc(r.dept)}</span><span class="bar" style="width:${r[key]/mx*100}%"></span><span class="n">${r[key]}</span></li>`).join("")+`<button class="btn" style="margin-top:6px" data-mode="board">전체 현황 보기 (${rows.length}개 과)</button>`
     :`<p class="empty">소속 과를 적고 영상 하나만 봐도 우리 과가 여기에 오릅니다.</p>`;
 }
@@ -840,10 +845,10 @@ async function drawCert(c){
 async function renderCert(){
   const p=$("#certPanel");if(document.activeElement&&document.activeElement.id==="certName")return;
   const done=STAGES.filter(s=>stageOk(s.k)).length;
-  if(done<5){p.innerHTML=`<h4>${st.solo?"학습 확인서":"수료증"}</h4><p class="src">단계마다 미션 인증 + 확인 문제 3개를 마치면 단계 완성. 다섯 단계를 완성하면 수료 시험(${PASS}점 이상)이 열립니다. 지금 ${done}/5 단계.</p>`;return}
+  if(done<5){p.innerHTML=`<h4>${st.solo?"학습 확인서":"수료증"}</h4>${goShared("공식 수료증은 함께 기록판에서","AI혁신팀 명의 수료증")}<p class="src">단계마다 미션 인증 + 확인 문제 3개를 마치면 단계 완성. 다섯 단계를 완성하면 수료 시험(${PASS}점 이상)이 열립니다. 지금 ${done}/5 단계.</p>`;return}
   if(!examPassed()){const ex=mine.exam||{};p.innerHTML=`<h4>수료 시험이 열렸습니다</h4><p class="src">상황형 ${EXAM.length}문항, ${PASS}점 이상이면 ${st.solo?"학습 확인서":"수료증"}. ${ex.tries?`최고 ${ex.best||0}점 · ${ex.tries}번 도전.`:"몇 번이든 다시 도전할 수 있어요."}</p><button class="btn watch big" data-exam>수료 시험 보기</button>`;return}
   if(!certName&&st.user){try{const me=await st.user.me();certName=me?.name||""}catch(e){}}
-  p.innerHTML=`<h4>${st.solo?"다섯 단계를 마쳤습니다":"수료를 축하합니다"}</h4><canvas id="certCanvas" style="width:100%;height:auto;border:1px solid var(--line);border-radius:6px" aria-label="수료증 미리보기"></canvas>
+  p.innerHTML=`<h4>${st.solo?"다섯 단계를 마쳤습니다":"수료를 축하합니다"}</h4>${goShared("공식 수료증은 함께 기록판에서","AI혁신팀 명의 수료증")}<canvas id="certCanvas" style="width:100%;height:auto;border:1px solid var(--line);border-radius:6px" aria-label="수료증 미리보기"></canvas>
     <div class="proof" style="margin-top:8px"><label for="certName">수료증에 적을 이름</label><input id="certName" maxlength="20" value="${esc(certName)}">
     <div class="row"><button class="btn watch" data-certdl>수료증 내려받기 (PNG)</button></div><p class="src" id="certMsg"></p></div>`;
   drawCert($("#certCanvas"));
@@ -968,6 +973,7 @@ document.addEventListener("submit",async e=>{
     try{const s=JSON.parse(localStorage.getItem("axcrew4")||"null");if(s&&s.stages)mine={stages:s.stages||{},seen:s.seen||{},likes:s.likes||{},tried:s.tried||{},quiz:s.quiz||{},exam:s.exam||null,weeks:s.weeks||{},qs:s.qs||{},ans:s.ans||{},recs:s.recs||{},cert:s.cert||null,dept:s.dept||""}}catch(e){}
     st.docs=[{uid:"me",...mine}];
     $("#modeNote").textContent="개인 연습판입니다. 기록은 이 브라우저에만 남고, 미션은 스스로 확인하며 끝까지 마치면 학습 확인서를 받습니다. 동료와 함께 기록하고 AI혁신팀 검수·과 대항에 참여하려면 AI혁신팀이 안내하는 claude.ai 함께 기록판에서 열어 주세요.";
+    if(SHARED())$("#modeNote").insertAdjacentHTML("afterend",goShared("함께 기록판 열기","동료와 함께 기록·검수·과 대항"));
     return render();
   }
   st.db=db;st.uid=uid;
