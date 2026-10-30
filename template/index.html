@@ -479,7 +479,7 @@ function setMode(m){
 }
 /* 검수 상태: ok(인증 완료) · back(보완 요청) · wait(검수 대기) */
 function statusOf(uid,k,cert){
-  if(!cert)return null;const r=st.team["r~"+uid+"~"+k];
+  if(!cert)return null;if(st.solo)return "ok";/* 개인 연습판(공유 DB 없음): 스스로 확인 */const r=st.team["r~"+uid+"~"+k];
   if(r&&r.forAt===cert.at)return r.status==="ok"?"ok":"back";
   return "wait";
 }
@@ -565,7 +565,7 @@ const TIP=`<div class="tip"><b>한 장 요약 · 이렇게 시키면 됩니다</
   받은 답은 <b>사실 확인</b> 후 쓰고, 이름·연락처·주민번호는 <b>넣기 전에 지웁니다</b>.</div>`;
 const NEXT=`<div class="nextpath"><b>열매 다음 길</b> — ‘어, 이게되네?’를 마쳤다면 행정안전부 ‘AI 챔피언’ 인증에 도전해 보세요. 중랑 AI혁신팀이 함께 준비합니다.
   <ol><li>‘어, 이게되네?’ 열매</li><li>→</li><li class="g">AI 챔피언 그린 (실무)</li><li>→</li><li class="b">블루 (과제 설계)</li><li>→</li><li class="k">블랙 (기관 과제 해결)</li></ol></div>`;
-const PILL={ok:'<span class="pill ok">인증 완료</span>',wait:'<span class="pill wait">AI혁신팀 검수 대기</span>',back:'<span class="pill back">보완 요청</span>'};
+const PILL={get ok(){return st.solo?'<span class="pill ok">스스로 확인</span>':'<span class="pill ok">인증 완료</span>'},wait:'<span class="pill wait">AI혁신팀 검수 대기</span>',back:'<span class="pill back">보완 요청</span>'};
 function missionBox(i){
   const s=STAGES[i],m=s.m,done=mine.stages[s.k];const stt=statusOf(myId(),s.k,done);
   const form=st.open?`<form class="proof" id="proofForm">
@@ -578,12 +578,12 @@ function missionBox(i){
       <input id="linkInput" name="link" maxlength="300" placeholder="https://" value="${esc(done?.link||"")}">
       <label for="toolInput">주로 쓴 도구</label>
       <select id="toolInput" name="tool">${TOOLS.map(t=>`<option ${done?.tool===t?"selected":""}>${t}</option>`).join("")}</select>
-      <p class="src">인증 내용은 AI혁신팀이 먼저 확인합니다. 승인 전에는 동료에게 보이지 않고, 승인되면 레시피가 서랍에 실립니다.${done?" 고쳐서 올리면 다시 확인합니다.":""}</p>
-      <div class="row"><button class="btn watch big" type="submit">${done?"고쳐서 다시 올리기":"AI혁신팀에 인증 요청"}</button><button class="btn" type="button" data-cancel>닫기</button></div></form>`
+      <p class="src">${st.solo?"개인 연습판에서는 검수 없이 이 브라우저에만 기록됩니다. 스스로 확인한 결과물로 칩니다.":"인증 내용은 AI혁신팀이 먼저 확인합니다. 승인 전에는 동료에게 보이지 않고, 승인되면 레시피가 서랍에 실립니다."+(done?" 고쳐서 올리면 다시 확인합니다.":"")}</p>
+      <div class="row"><button class="btn watch big" type="submit">${st.solo?(done?"고쳐서 다시 기록":"해 봤어요, 기록하기"):done?"고쳐서 다시 올리기":"AI혁신팀에 인증 요청"}</button><button class="btn" type="button" data-cancel>닫기</button></div></form>`
     :`<div class="actions"><button class="btn ${stt==="ok"?"ok":"watch"} big" data-open>${stt==="back"?"메모대로 고쳐서 다시 올리기":done?"인증 고치기":"결과물 인증 요청"}</button><button class="btn big" data-ask="s:${s.k}">이 단계 질문하기</button></div>`;
   const STATUS={wait:`<p class="status">${PILL.wait} AI혁신팀이 확인 중입니다. 아직 동료에게 공개되지 않았고, 승인되면 배지가 켜지고 레시피가 서랍에 실립니다. 그동안 다음 단계 5분 맛보기를 해 보세요.</p>`,
     back:`<p class="status back">${PILL.back} AI혁신팀이 고칠 점을 남겼습니다. 메모대로 고쳐 다시 올리면 다시 확인합니다.</p>`,
-    ok:`<p class="status ok">${PILL.ok} 미션 인증 완료!${(mine.quiz||{})[s.k]?"":" 아래 확인 문제 3개만 맞히면 단계 완성입니다."} 레시피가 서랍에 실렸고, 이제 이 단계에 좋은 자료를 추천하거나 동료 질문에 답할 수 있어요.</p>`};
+    ok:`<p class="status ok">${PILL.ok} ${st.solo?"미션 기록 완료!":"미션 인증 완료!"}${(mine.quiz||{})[s.k]?"":" 아래 확인 문제 3개만 맞히면 단계 완성입니다."} 레시피가 서랍에 실렸고, 이제 이 단계에 좋은 자료를 추천하거나 동료 질문에 답할 수 있어요.</p>`};
   const tz=TASTE[s.k];
   const taste=tz&&!done?`<div class="taste"><b>딱 5분, 먼저 시켜 보세요 · ${esc(s.name)} 맛보기</b><pre id="tasteText">${esc(tz.p)}</pre><p>${esc(tz.n)} 실제 개인정보나 비공개 자료 대신 위 예시로 해 보세요. 맛보기는 인증이 아닙니다.</p>
     <div class="actions"><button class="btn" data-copytaste>예시 복사하기</button><button class="btn watch" data-open>되네요! 내 일로 미션 시작</button></div></div>`:"";
@@ -603,7 +603,7 @@ function recipeCard(r){
   const mineCard=r.uid===myId();const liked=!!mine.likes[r.key];const did=!!(mine.tried||{})[r.key];const u=safeUrl(r.link);
   return `<article class="rcard">
     <div class="who"><b>${esc(nameOf(r.uid))}</b>${r.dept?` · ${esc(r.dept)}`:""}</div>
-    <div><span class="chip st">${esc(r.s.name)}</span> ${r.tool?`<span class="chip">${esc(r.tool)}</span>`:""} <span class="pill ok">AI혁신팀 인증</span></div>
+    <div><span class="chip st">${esc(r.s.name)}</span> ${r.tool?`<span class="chip">${esc(r.tool)}</span>`:""} <span class="pill ok">${st.solo?"내 레시피":"AI혁신팀 인증"}</span></div>
     <p class="res">${esc(r.note)}</p>
     ${r.recipe?`<pre>${esc(r.recipe)}</pre>`:`<p class="why">레시피 없이 결과만 남겼어요.</p>`}
     <div class="actions">
@@ -704,6 +704,7 @@ function renderExam(){
     <div class="actions">${res?`<button class="btn watch big" type="button" data-exretry>${res.score>=PASS?"한 번 더 풀어 보기":"다시 도전"}</button>`:`<button class="btn watch big" type="submit">제출하고 채점하기</button>`}</div></form>`;
 }
 async function renderBoard(){
+  if(st.solo){$("#stagehead").innerHTML=`<h2>과 대항 현황</h2><p>과 대항은 동료 기록이 함께 쌓이는 판에서 집계됩니다. 지금 화면은 개인 연습판이라 내 기록만 있어요. AI혁신팀이 안내하는 함께 기록판(claude.ai)에서 우리 과 점수를 올려 보세요.</p>`;$("#missionBox").innerHTML="";$("#vhead").textContent="";$("#cards").innerHTML="";return}
   const {rows,key}=deptRows();const mx=Math.max(1,...rows.map(r=>r[key]));
   $("#stagehead").innerHTML=`<h2>과 대항 현황 <span class="live">LIVE</span></h2><p>어느 과가 가장 많이 배우고 만들고 가르치고 있을까요? 동료가 영상을 보고, 문제를 풀고, 레시피를 따라 할 때마다 바로 바뀝니다. 인원이 적은 과는 ‘1인당’으로 보면 공평합니다.</p>`;
   $("#missionBox").innerHTML=`<div class="filters"><button data-bm="sum" aria-pressed="${st.bm==="sum"}">AX 포인트 합계</button><button data-bm="avg" aria-pressed="${st.bm==="avg"}">1인당 포인트</button></div>`;
@@ -768,6 +769,7 @@ async function renderSide(){
     :`<p class="empty">아직 인증된 결과물이 없습니다. 씨앗 단계 미션으로 첫 결과물을 올려 주세요.</p>`;
   const {rows,key}=deptRows();const top=rows.slice(0,5);const mx=Math.max(1,...top.map(r=>r[key]));
   const d=$("#dept");d.className="mini-board";
+  if(st.solo){d.innerHTML=`<p class="empty">과 대항은 함께 기록판(claude.ai)에서 집계됩니다. 지금은 개인 연습판이에요.</p>`;return}
   d.innerHTML=top.length?top.map((r,i)=>`<li><span class="rk ${i<3?"r"+(i+1):""}">${i+1}</span><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${r.dept===mine.dept?"<b>"+esc(r.dept)+"</b>":esc(r.dept)}</span><span class="bar" style="width:${r[key]/mx*100}%"></span><span class="n">${r[key]}</span></li>`).join("")+`<button class="btn" style="margin-top:6px" data-mode="board">전체 현황 보기 (${rows.length}개 과)</button>`
     :`<p class="empty">소속 과를 적고 영상 하나만 봐도 우리 과가 여기에 오릅니다.</p>`;
 }
@@ -817,13 +819,14 @@ async function drawCert(c){
   x.fillStyle="#fbfdfc";x.fillRect(0,0,W,H);
   x.strokeStyle=teal;x.lineWidth=14;x.strokeRect(40,40,W-80,H-80);x.strokeStyle=amber;x.lineWidth=3;x.strokeRect(70,70,W-140,H-140);
   x.textAlign="center";x.fillStyle=teal;x.font="700 26px "+B;x.fillText("중랑구청 AI혁신팀 · 누가누배",W/2,150);
-  x.fillStyle=ink;x.font="400 120px "+D;x.fillText("수 료 증",W/2,285);
+  x.fillStyle=ink;x.font="400 120px "+D;x.fillText(st.solo?"학습 확인서":"수 료 증",W/2,285);
   x.fillStyle=muted;x.font="500 26px "+B;x.fillText("제 "+certNo()+" 호",W/2,350);
   x.fillStyle=ink;x.font="400 78px "+D;x.fillText(certName||"이름",W/2,460);
   if(mine.dept){x.fillStyle=muted;x.font="500 30px "+B;x.fillText(mine.dept,W/2,508)}
   x.fillStyle=ink;x.font="500 32px "+B;
   const body="위 사람은 찾아가는 AX교실 ‘어, 이게되네?’의 씨앗·새싹·줄기·나무·열매 다섯 단계 미션을 모두 마치고, 결과물과 레시피를 AI혁신팀으로부터 인증받고 수료 시험을 "+((mine.exam||{}).best||0)+"점으로 통과하였기에 이 수료증을 드립니다.";
-  wrapText(x,body,W/2,585,1120,52);
+  const bodySolo="위 사람은 찾아가는 AX교실 ‘어, 이게되네?’ 개인 연습판에서 씨앗·새싹·줄기·나무·열매 다섯 단계 미션과 확인 문제를 스스로 마치고 마무리 시험을 "+((mine.exam||{}).best||0)+"점으로 통과하였음을 확인합니다.";
+  wrapText(x,st.solo?bodySolo:body,W/2,585,1120,52);
   const icons=STAGES.map(s=>[...ICON[s.ic].matchAll(/d="([^"]+)"/g)].map(m=>m[1]));
   STAGES.forEach((s,i)=>{const cx=W/2+(i-2)*170,cy=765;x.beginPath();x.arc(cx,cy,52,0,Math.PI*2);x.fillStyle=amber;x.fill();
     x.save();x.translate(cx-36,cy-36);x.scale(3,3);x.strokeStyle=ink;x.lineWidth=1.8;x.lineCap="round";x.lineJoin="round";icons[i].forEach(d=>x.stroke(new Path2D(d)));x.restore();
@@ -831,15 +834,15 @@ async function drawCert(c){
   x.fillStyle=coral;x.font="500 28px "+B;x.fillText("“사과 속 씨앗은 셀 수 있지만, 씨앗 속 사과는 셀 수 없다.”",W/2,935);
   const d=new Date(mine.cert?.at||Date.now());
   x.fillStyle=ink;x.font="500 30px "+B;x.fillText(d.getFullYear()+"년 "+(d.getMonth()+1)+"월 "+d.getDate()+"일",W/2,988);
-  x.font="400 38px "+D;x.fillText("중랑구청 AI혁신팀",W/2,1036);
+  x.font="400 38px "+D;x.fillText(st.solo?"찾아가는 AX교실 · 개인 연습판":"중랑구청 AI혁신팀",W/2,1036);
 }
 async function renderCert(){
   const p=$("#certPanel");if(document.activeElement&&document.activeElement.id==="certName")return;
   const done=STAGES.filter(s=>stageOk(s.k)).length;
-  if(done<5){p.innerHTML=`<h4>수료증</h4><p class="src">단계마다 미션 인증 + 확인 문제 3개를 마치면 단계 완성. 다섯 단계를 완성하면 수료 시험(${PASS}점 이상)이 열립니다. 지금 ${done}/5 단계.</p>`;return}
-  if(!examPassed()){const ex=mine.exam||{};p.innerHTML=`<h4>수료 시험이 열렸습니다</h4><p class="src">상황형 ${EXAM.length}문항, ${PASS}점 이상이면 수료증. ${ex.tries?`최고 ${ex.best||0}점 · ${ex.tries}번 도전.`:"몇 번이든 다시 도전할 수 있어요."}</p><button class="btn watch big" data-exam>수료 시험 보기</button>`;return}
+  if(done<5){p.innerHTML=`<h4>${st.solo?"학습 확인서":"수료증"}</h4><p class="src">단계마다 미션 인증 + 확인 문제 3개를 마치면 단계 완성. 다섯 단계를 완성하면 수료 시험(${PASS}점 이상)이 열립니다. 지금 ${done}/5 단계.</p>`;return}
+  if(!examPassed()){const ex=mine.exam||{};p.innerHTML=`<h4>수료 시험이 열렸습니다</h4><p class="src">상황형 ${EXAM.length}문항, ${PASS}점 이상이면 ${st.solo?"학습 확인서":"수료증"}. ${ex.tries?`최고 ${ex.best||0}점 · ${ex.tries}번 도전.`:"몇 번이든 다시 도전할 수 있어요."}</p><button class="btn watch big" data-exam>수료 시험 보기</button>`;return}
   if(!certName&&st.user){try{const me=await st.user.me();certName=me?.name||""}catch(e){}}
-  p.innerHTML=`<h4>수료를 축하합니다</h4><canvas id="certCanvas" style="width:100%;height:auto;border:1px solid var(--line);border-radius:6px" aria-label="수료증 미리보기"></canvas>
+  p.innerHTML=`<h4>${st.solo?"다섯 단계를 마쳤습니다":"수료를 축하합니다"}</h4><canvas id="certCanvas" style="width:100%;height:auto;border:1px solid var(--line);border-radius:6px" aria-label="수료증 미리보기"></canvas>
     <div class="proof" style="margin-top:8px"><label for="certName">수료증에 적을 이름</label><input id="certName" maxlength="20" value="${esc(certName)}">
     <div class="row"><button class="btn watch" data-certdl>수료증 내려받기 (PNG)</button></div><p class="src" id="certMsg"></p></div>`;
   drawCert($("#certCanvas"));
@@ -906,7 +909,8 @@ document.addEventListener("click",async e=>{
     const blob=await new Promise(r=>c.toBlob(r,"image/png"));
     const dl=await window.claude?.use?.("downloads");
     const m2=$("#certMsg");
-    if(!dl){if(m2)m2.textContent="이 화면에서는 내려받기를 쓸 수 없어요. 위 미리보기 이미지를 길게 누르거나 우클릭해 저장해 주세요.";return}
+    const fname="어이게되네_"+(st.solo?"학습확인서_":"수료증_")+certName.replace(/[\\/:*?"<>|]/g,"")+".png";
+    if(!dl){try{const u=URL.createObjectURL(blob);const a=document.createElement("a");a.href=u;a.download=fname;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000);if(m2)m2.textContent="내려받았습니다. 축하합니다!"}catch(err){if(m2)m2.textContent="내려받기가 막혔어요. 위 미리보기 이미지를 길게 누르거나 우클릭해 저장해 주세요."}return}
     try{await dl.save({filename:"어이게되네_수료증_"+certName.replace(/[\\/:*?"<>|]/g,"")+".png",data:blob});if(m2)m2.textContent="수료증을 저장했습니다. 축하합니다!"}
     catch(err){if(m2)m2.textContent=err?.code==="declined"?"저장을 취소했습니다.":"저장하지 못했습니다("+(err?.code||"오류")+"). 잠시 후 다시 눌러 주세요."}
     return}
@@ -959,10 +963,10 @@ document.addEventListener("submit",async e=>{
   let uid=null;try{uid=user?await user.id():null}catch(e){}
   try{st.admin=user?!!(await user.canEdit()):false}catch(e){st.admin=false}
   if(!db||!uid){
-    st.admin=false;
+    st.admin=false;st.solo=true;
     try{const s=JSON.parse(localStorage.getItem("axcrew4")||"null");if(s&&s.stages)mine={stages:s.stages||{},seen:s.seen||{},likes:s.likes||{},tried:s.tried||{},quiz:s.quiz||{},exam:s.exam||null,weeks:s.weeks||{},qs:s.qs||{},ans:s.ans||{},recs:s.recs||{},cert:s.cert||null,dept:s.dept||""}}catch(e){}
     st.docs=[{uid:"me",...mine}];
-    $("#modeNote").textContent="지금은 이 브라우저에만 기록됩니다. claude.ai에 로그인해 열면 동료들과 함께 기록되고 AI혁신팀 검수를 받습니다.";
+    $("#modeNote").textContent="개인 연습판입니다. 기록은 이 브라우저에만 남고, 미션은 스스로 확인하며 끝까지 마치면 학습 확인서를 받습니다. 동료와 함께 기록하고 AI혁신팀 검수·과 대항에 참여하려면 AI혁신팀이 안내하는 claude.ai 함께 기록판에서 열어 주세요.";
     return render();
   }
   st.db=db;st.uid=uid;
