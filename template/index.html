@@ -248,13 +248,107 @@ details.grow summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-wei
 #myDept input{flex:1;min-width:0;font:inherit;font-size:13px;padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--surface);color:var(--ink)}
 @media (max-width:900px){.main{grid-template-columns:1fr}aside{position:static}header.top{grid-template-columns:1fr}.starts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
+
+/* ==========================================================
+   2026.11 리디자인 (MotionSites Web Builder 원칙)
+   첫 화면 한 가지 생각 = '내 일 하나 고르기'. 큰 글자, 색은 바탕·잉크·회색 + 포인트 하나(코랄), 성장 노선만 그라데이션.
+   ========================================================== */
+:root{--hero:#0D2F2E;--hero-2:#123B3A;--cream:#F4EEDF;--c80:rgba(244,238,223,.82);--c60:rgba(244,238,223,.62);--c40:rgba(244,238,223,.4);--c14:rgba(244,238,223,.14);--ease:cubic-bezier(.22,1,.36,1);--r:16px}
+html{overflow-x:clip}
+body{-webkit-font-smoothing:antialiased;margin:0}
+::selection{background:rgba(226,86,63,.25)}
+.wrap{padding-top:0}
+.heroband{margin-inline:calc(50% - 50vw);padding:clamp(28px,4vw,52px) max(16px,calc((100vw - 1180px)/2 + 16px)) clamp(26px,3.4vw,40px);background:var(--hero);color:var(--cream);position:relative;isolation:isolate;overflow:hidden;margin-bottom:28px}
+.heroband::before{content:"";position:absolute;z-index:-1;inset:0;background:radial-gradient(ellipse 55% 70% at 88% 0%,rgba(240,165,30,.16),transparent 70%),radial-gradient(ellipse 40% 60% at 0% 100%,rgba(226,86,63,.10),transparent 70%)}
+.heroband::after{content:"";position:absolute;inset:0;z-index:-1;opacity:.06;mix-blend-mode:overlay;pointer-events:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E")}
+header.top{border-bottom:0;padding-bottom:0;gap:clamp(20px,4vw,56px);align-items:end}
+.eyebrow{color:var(--c60);font-size:12.5px;letter-spacing:.08em;font-weight:500;display:flex;align-items:center;gap:10px}
+.eyebrow::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--coral);box-shadow:0 0 0 4px rgba(226,86,63,.2);flex:none}
+h1{margin:clamp(14px,2vw,22px) 0 clamp(14px,2vw,20px);line-height:.92;color:var(--cream);text-wrap:initial}
+h1 .h1-k{display:block;font-family:var(--f-body);font-weight:700;font-size:clamp(17px,1.8vw,22px);letter-spacing:-.01em;color:var(--c80);margin-bottom:clamp(10px,1.4vw,16px)}
+h1 .h1-big{display:block;font-size:clamp(56px,9.6vw,132px);letter-spacing:-.035em;white-space:nowrap}
+h1 em{color:var(--amber);position:relative;display:inline-block}
+h1 em::after{content:"";position:absolute;left:.04em;right:.04em;bottom:-.04em;height:.08em;background:var(--coral);border-radius:.1em;z-index:-1;transform-origin:left;animation:ul 1s var(--ease) .6s both}
+@keyframes ul{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.lede{color:var(--c60);font-size:15.5px;line-height:1.7;max-width:36rem}
+.lede b{color:var(--cream);font-weight:700}
+.me{background:var(--surface);color:var(--ink);border:0;border-radius:20px;padding:18px 20px;min-width:290px;box-shadow:0 24px 60px rgba(0,0,0,.35)}
+.me .lv{font-family:var(--f-display);font-weight:400;font-size:24px;line-height:1.15;margin-top:2px}
+.me .next{border-radius:12px;padding:10px 12px;border-width:0;background:var(--coral);color:#fff;font-weight:500;transition:transform .2s,background .2s}
+.me .next b{color:#fff}
+.me .next:hover{background:#c9442f}
+.me .next:active{transform:scale(.98)}
+.start{background:transparent;border:0;border-radius:0;padding:0;margin:clamp(28px,4vw,44px) 0 0;border-top:1px solid var(--c14);padding-top:clamp(22px,3vw,30px)}
+.start h2{color:var(--cream);font-size:clamp(22px,2.4vw,30px)}
+.start>p{color:var(--c60)}
+.starts{gap:10px}
+.starts button{background:rgba(244,238,223,.06);border:1px solid var(--c14);color:var(--cream);border-radius:var(--r);padding:16px 16px 14px;gap:6px;transition:background .25s,border-color .25s,transform .25s var(--ease)}
+.starts button:hover{background:var(--cream);color:var(--ink);border-color:var(--cream);transform:translateY(-3px)}
+.starts button b{font-size:15.5px}
+.starts button span{color:var(--c60)}
+.starts button:hover span{color:var(--muted)}
+.starts button .ic{color:var(--amber);width:26px;height:26px}
+.starts button:hover .ic{color:var(--coral)}
+.howline{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;margin:0 0 30px;border:1px solid var(--line);border-radius:var(--r);background:var(--surface);overflow:hidden}
+.howline span{padding:14px 16px;font-size:13px;line-height:1.5}
+.howline span+span{border-left:1px solid var(--line)}
+.howline b{display:block;font-size:14.5px;margin-bottom:2px;color:var(--ink)}
+.tabs{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);padding:10px 0;margin:0 0 18px;flex-wrap:nowrap;overflow-x:auto;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{border:1px solid var(--line);background:var(--surface);font-weight:700;font-size:14px;padding:9px 18px;white-space:nowrap;transition:background .2s,color .2s,border-color .2s}
+.tabs button:hover{border-color:var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);border-color:var(--ink)}
+.epigraph{border-left:0;background:transparent;padding:6px 0 0;margin:6px 0 22px;font-family:var(--f-display);font-weight:400;font-size:clamp(20px,2.4vw,28px);line-height:1.35;letter-spacing:-.01em;max-width:34ch}
+.epigraph cite{font-family:var(--f-body);font-size:13px;margin-top:10px}
+.route{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px 10px 18px;margin-bottom:30px}
+.route ol::before{top:27px;height:4px;opacity:.9}
+.stop{width:58px;height:58px;border-width:4px;transition:transform .3s var(--ease),background .2s}
+.route button:hover .stop{transform:translateY(-3px)}
+.route button[aria-pressed="true"] .stop{box-shadow:0 10px 24px rgba(226,86,63,.35)}
+.route strong{font-size:20px;margin-top:4px}
+.stagehead h2{font-size:clamp(28px,3.4vw,40px);letter-spacing:-.02em;line-height:1.1}
+.smission{border-radius:20px;border-width:0;box-shadow:inset 0 0 0 2px var(--amber);padding:22px 24px}
+.smission.is-done{box-shadow:inset 0 0 0 2px var(--done)}
+.smission h3{font-size:22px;letter-spacing:-.01em}
+.card,.rcard,.qcard,.panel,.taste,.tip,.nextpath,.quiz,.reviewcard,details.faq{border-radius:var(--r)}
+.card,.rcard,.qcard{transition:transform .3s var(--ease),box-shadow .3s,border-color .2s}
+.card:hover,.rcard:hover,.qcard:hover{transform:translateY(-3px);box-shadow:0 14px 34px rgba(20,40,43,.10)}
+.btn,.wow,.tried{border-radius:999px;transition:background .2s,color .2s,transform .15s}
+.btn{padding:8px 16px}
+.btn:active,.wow:active,.tried:active{transform:scale(.97)}
+.btn.watch:hover{background:var(--coral);border-color:var(--coral);color:#fff}
+.panel{padding:18px}
+.panel h4{font-size:15.5px}
+footer{margin-top:56px}
+@media (prefers-reduced-motion:no-preference){
+  .heroband .eyebrow,.heroband h1 .h1-k,.heroband h1 .h1-big,.heroband .lede,.heroband .me,.heroband .start{animation:rise .9s var(--ease) both}
+  .heroband h1 .h1-k{animation-delay:.08s}.heroband h1 .h1-big{animation-delay:.16s}.heroband .lede{animation-delay:.32s}.heroband .me{animation-delay:.4s}.heroband .start{animation-delay:.5s}
+}
+@keyframes rise{from{opacity:0;transform:translateY(22px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){h1 em::after{animation:none}}
+@media (max-width:900px){
+  header.top{grid-template-columns:1fr}
+  .me{min-width:0}
+  .howline{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .howline span:nth-child(3){border-left:0}
+  .howline span:nth-child(n+3){border-top:1px solid var(--line)}
+}
+@media (max-width:560px){
+  h1 .h1-big{font-size:clamp(48px,15vw,72px)}
+  .starts{grid-template-columns:1fr 1fr}
+  .starts button:last-child{grid-column:1/-1}
+  .howline{grid-template-columns:1fr}
+  .howline span{border-left:0!important}
+  .howline span+span{border-top:1px solid var(--line)}
+}
 </style>
 
 <div class="wrap">
+ <div class="heroband">
   <header class="top">
     <div>
       <div class="eyebrow">중랑구청 AI혁신팀 · 누가누배 — 누구나 가르치고 누구나 배운다</div>
-      <h1>찾아가는 AX교실 <em>‘어, 이게되네?’</em></h1>
+      <h1><span class="h1-k">찾아가는 AX교실</span><span class="h1-big">어, 이게<em>되네?</em></span></h1>
       <p class="lede">강의를 듣는 곳이 아닙니다. <b>내 일을 AI로 해 보는 곳</b>입니다. 강사를 기다리지 않아도 됩니다. 출퇴근길에 10분 이하 영상 하나, 자리에서 30분 미션 하나. “어, 이게 되네?” 하는 순간이 다섯 번 쌓이면 일하는 방식이 바뀝니다.</p>
     </div>
     <div class="me" aria-live="polite">
@@ -278,6 +372,7 @@ details.grow summary{cursor:pointer;font-size:12.5px;color:var(--muted);font-wei
     <p>내 일 하나를 고르면 그 일에 맞는 미션과 10분 이하 영상으로 안내합니다. 단계마다 결과물은 하나면 됩니다.</p>
     <div class="starts" id="starts"></div>
   </section>
+ </div>
   <div class="howline"><span><b>① 5분 맛보기</b> 예시를 복사해 바로 시켜 보기</span><span><b>② 30분 미션</b> 내 업무로 결과물 1개</span><span><b>③ 나눈다</b> 레시피를 남기면 AI혁신팀 확인 후 배지·레시피 서랍</span><span><b>④ 가르친다</b> 배지 받은 단계는 동료에게 자료 추천·답하기</span></div>
 
   <div class="tabs" role="tablist">
