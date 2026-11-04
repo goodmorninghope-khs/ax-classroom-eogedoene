@@ -3,6 +3,7 @@
    일반 웹에서도 공유 기록·AI혁신팀 검수·과 대항·수료증이 돌게 한다. 서버는 /api/db.
    참여 전: 개인 연습판 + window.AX_JOIN(참여 창). 참여 후: 공유 모드. claude.ai 안에서는 아무것도 하지 않는다. */
 (function () {
+  window.AX_SITE = true; /* 템플릿이 '새 주소 안내 띠'를 그리지 않게 한다 */
   if (window.claude && window.claude.use) return;
   var KEY = "axjoin1";
   var me = null;
