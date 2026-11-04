@@ -465,6 +465,8 @@ const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&
 const safeUrl=u=>{try{const x=new URL(u);return /^https?:$/.test(x.protocol)?x.href:""}catch(e){return ""}};
 /* 개인 연습판(일반 웹 배포)에서만: 공유가 필요한 기능 자리에 함께 기록판으로 잇는다. 주소는 배포 환경이 window.AX_SHARED_URL로 넣는다(템플릿·저장소에는 없음) */
 /* 같은 사이트 안에서 함께 기록판에 참여하는 배포(Vercel 통합판)는 window.AX_JOIN을 둔다. 있으면 바깥 링크 대신 참여 창을 연다 */
+/* 통합판 주소(2026-11-04). claude.ai 아티팩트로 열면 맨 위에 이 주소로 오라는 안내 띠를 단다. 복제할 때 바꾸고, 비우면 안내 없음 */
+const HOME_URL="https://ax-eogedoene.vercel.app/";
 const JOIN=()=>!!st.solo&&typeof window.AX_JOIN==="function";
 const SHARED=()=>st.solo?(JOIN()?"join":safeUrl(window.AX_SHARED_URL||"")):"";
 const WHERE=()=>JOIN()?"함께 기록판(이름·소속 과·교실 코드로 참여)":"AI혁신팀이 안내하는 함께 기록판(claude.ai)";
@@ -980,6 +982,7 @@ document.addEventListener("submit",async e=>{
     return render();
   }
   st.db=db;st.uid=uid;
+  if(!window.AX_SITE&&HOME_URL){const hu=safeUrl(HOME_URL);if(hu)$(".wrap").insertAdjacentHTML("afterbegin",`<div class="together" style="border:2px solid var(--coral);border-radius:10px;padding:12px 14px;margin:0 0 14px;background:var(--surface)"><strong>이 교실은 이제 한 주소에서 운영합니다</strong><span class="src">claude.ai 로그인 없이 이름·소속 과·교실 코드로 참여하고, 검수·과 대항·수료증도 그곳에서 이어집니다. 여기 남긴 기록은 옮겨지지 않아요.</span><a class="btn watch" href="${esc(hu)}" target="_blank" rel="noopener">${esc(hu.replace(/^https:\/\//,"").replace(/\/$/,""))} 에서 함께 기록하기 →</a></div>`)}
   try{window.dispatchEvent(new CustomEvent("ax:shared",{detail:{uid,admin:st.admin}}))}catch(e){}
   if(h==="review"&&st.admin)setMode("review");
   $("#modeNote").textContent=st.admin?"AI혁신팀 권한으로 보고 있습니다. 검수함에서 인증을 승인하고, 묻고 답하기에서 FAQ를 고를 수 있습니다.":"레시피는 AI혁신팀 확인 후 공개됩니다. 질문과 답은 바로 동료들에게 보입니다. 내 기록은 나만 고칠 수 있습니다.";
