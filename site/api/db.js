@@ -114,6 +114,18 @@ async function handle(b) {
     return { ok: true, ver: String(r[1]) };
   }
 
+  if (op === "del") {
+    // AI혁신팀 전용 정리: 시험 기록·외부 글 지우기. who=uid면 그 사람의 crew·prof를 함께 지운다
+    if (!okAdmin(b)) throw fail(403, "AI혁신팀 권한이 필요합니다", "perm");
+    const cmds = [];
+    if (typeof b.who === "string" && b.who) cmds.push(["HDEL", k("crew"), b.who], ["HDEL", k("prof"), b.who]);
+    if (b.col === "team" && typeof b.id === "string" && b.id) cmds.push(["HDEL", k("team"), b.id]);
+    if (!cmds.length) throw fail(400, "지울 대상이 없습니다", "id");
+    cmds.push(["INCR", k("ver")]);
+    await redis(cmds);
+    return { ok: true };
+  }
+
   throw fail(400, "알 수 없는 요청", "op");
 }
 
