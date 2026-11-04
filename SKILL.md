@@ -1,6 +1,6 @@
 ---
 name: ax-classroom-builder
-description: 유튜브 영상을 단계별·업무 상황별로 큐레이션하고 단계 미션·검수·레시피 서랍·묻고 답하기·동료 추천·수료증을 갖춘 '찾아가는 AX교실' 같은 교육 사이트를 만들거나 고치거나 다른 기관·대상(소상공인 '골목 교실' 등)용으로 복제할 때 쓴다.
+description: 유튜브 영상을 단계별·업무 상황별로 큐레이션하고 단계 미션·검수·레시피 서랍·묻고 답하기·동료 추천·수료증을 갖춘 '찾아가는 AX교실' 같은 교육 사이트를 만들거나 고치거나 다른 기관·대상(소상공인 '골목 교실' 등)용으로 복제할 때 쓴다. 템플릿 하나를 Claude 아티팩트와 Vercel 통합판(로그인 없이 이름·과·교실 코드로 참여, Upstash 공유 기록)으로 배포한다.
 ---
 
 # 찾아가는 AX교실 만들기 (편집형 교육 · 에듀레이션)
@@ -60,6 +60,7 @@ description: 유튜브 영상을 단계별·업무 상황별로 큐레이션하�
 
 ## 4. 데이터와 권한
 
+- Vercel 통합판(7절)은 같은 crew·team 스키마를 Upstash Redis 해시(`ax:crew`·`ax:team`, 이름은 `ax:prof`)에 저장하고, 권한은 서버(site/api/db.js)가 참여 토큰·관리자 서명으로 같은 규칙을 지킨다.
 Artifact 게시 시 `template/capabilities.json`을 그대로 `capabilities`로 넘긴다.
 
 - `crew/{uid}` (본인만 쓰기): `dept, stages{s0..s4:{note,tool,recipe,link,at}}, seen{videoId}, likes{key}, tried{key}, quiz{sK:{at,tries}}, exam{best,last,tries,at,passAt}, weeks{YYYY-Www}, qs{qid:{text,ref,at}}, ans{aid:{q,text,at}}, recs{rid:{stage,kind,title,url,len,why,at}}, cert{at}`
@@ -80,15 +81,19 @@ Artifact 게시 시 `template/capabilities.json`을 그대로 `capabilities`로 
 - 소상공인용 ‘골목 교실’: 대상·미션을 장사 업무(메뉴판, 리뷰 답글, 배달앱 정산, 전단)로 바꾸고, 검수는 지원기관 담당자, 과 대항 대신 업종·동네 대항(같은 LIVE 표).
 - 문체가 필요한 안내문·홍보 글은 golmok-writer 스킬과 함께 쓴다.
 
-## 7. Vercel 개인 연습판 (2026-10-30~)
+## 7. Vercel 통합판: 한 주소에서 연습과 함께 기록 (2026-11-04~, 처음 발행 2026-10-30)
 
-- 주소: https://ax-eogedoene.vercel.app (Vercel 프로젝트 ax-eogedoene, 저장소 `site/` 폴더가 루트, main 커밋 시 자동 배포).
-- `site/index.html`은 `template/index.html`을 문서 골격(doctype·charset·viewport·설명·OG·파비콘·config.js)으로 감싼 파일이다. 본문은 직접 고치지 않는다. template을 고친 뒤 `<div class="wrap">` 앞에 `</head><body>`를 넣는 방식으로 다시 감싸고, template·site를 같은 작업에서 함께 커밋한다.
-- 공유 DB(`window.claude`)가 없으면 `st.solo=true` 개인 연습판으로 동작한다. 기록은 localStorage(`axcrew4`), 미션은 검수 없이 '스스로 확인'(statusOf가 ok), 수료증 대신 '학습 확인서'(발급 명의 '찾아가는 AX교실 · 개인 연습판'), 내려받기는 일반 a[download], 과 대항은 '함께 기록판에서 집계' 안내. 아티팩트 판 동작은 그대로다.
-- 일반 웹에서는 아티팩트 런타임이 주던 `[hidden]` 숨김이 없으므로 템플릿 CSS에 `[hidden]{display:none!important}`를 둔다(빼면 업무 상황 줄·토스트·검수함 탭이 드러난다).
-- 함께 기록판 연결(사용자 결정 2026-10-30 '기능에 맞는 방식'): 연습판 전체가 아니라 공유가 필요한 기능 자리에만 링크를 둔다. 검수 인증(인증 폼 아래), 과 대항(탭·오른쪽 칸), 공식 수료증(학습 확인서 칸), 안내문(modeNote 아래). 혼자 하는 기능(맛보기·영상·문제·시험·학습 확인서)은 연습판 안에서 끝난다. 링크 옆에 '중랑구청 직원용 · claude.ai 로그인 필요 · 연습판 기록은 옮겨지지 않아요'를 붙인다. 템플릿의 `SHARED()`/`goShared()`가 `st.solo`이고 `window.AX_SHARED_URL`이 있을 때만 그린다.
-- 주소는 저장소에 두지 않는다. Vercel 프로젝트 환경변수 `AX_SHARED_URL`(Config, Production)에 넣고, `site/build.js`가 빌드 때 `config.js`로 만든다(`site/vercel.json`: buildCommand `node build.js`, outputDirectory `.`, config.js no-store). `site/index.html` head에 `<script src="/config.js"></script>`. 주소를 바꾸면 환경변수를 고치고 Redeploy.
-- 확인: 배포 뒤 `https://ax-eogedoene.vercel.app/?t=…` 응답이 `site/index.html`과 같은지 대조한다.
+- 주소: https://ax-eogedoene.vercel.app (Vercel 프로젝트 ax-eogedoene, 저장소 `site/` 폴더가 루트, main 커밋 시 자동 배포). 2026-11-04 사용자 결정("아싸가 판단해서 두 판 통합")으로 claude.ai 아티팩트(함께 기록판)와 Vercel(개인 연습판)을 이 한 주소로 합쳤다. 직원은 claude.ai 계정 없이 들어온다.
+- 구조: 템플릿은 하나다. `site/shim.js`가 아티팩트 런타임의 `window.claude.use("db"|"user")`를 같은 모양으로 흉내 내고, 서버 `site/api/db.js`(Vercel 함수)가 Upstash Redis(REST, Vercel Storage 연결, Free 요금제, 이름 ax-eogedoene-kv, 환경변수 `KV_REST_API_URL`·`KV_REST_API_TOKEN`)에 저장한다. 그래서 검수함·과 대항·레시피 서랍·묻고 답하기·수료증이 템플릿 수정 없이 일반 웹에서 돈다.
+- 흐름: 처음 오면 개인 연습판(`st.solo`, localStorage `axcrew4`). 공유가 필요한 자리(검수 인증·과 대항·공식 수료증·안내문)에 '함께 기록판 참여' 버튼이 뜨고(템플릿 `JOIN()`이 `window.AX_JOIN`을 보고 `goShared()`를 버튼으로 그림), 이름·소속 과·교실 코드를 넣으면 서버가 uid와 서명 토큰을 준다. 연습 기록은 그대로 crew 문서로 옮겨진다. 참여 정보는 localStorage `axjoin1`. 참여 뒤에는 공유 모드로 다시 열리고 안내문 아래에 '○○ · ○○과 이름으로 함께 기록 중 · 다른 기기에서 이어 하기(이어 하기 코드 복사) · AI혁신팀 관리자 · 이 기기에서 나가기' 줄이 붙는다.
+- 권한: 읽기·쓰기 모두 참여 토큰(HMAC, 비밀값 `AX_SECRET` 또는 KV 토큰) 필요. crew는 본인 uid만, team(검수·FAQ)은 관리자만 쓴다. 관리자는 참여 창의 'AI혁신팀 관리자'나 상태 줄 버튼에 관리자 키를 넣으면 uid에 묶인 관리자 서명(akey)을 받는다. 정리용 `op:"del"`(관리자만, 사람 단위 crew·prof 삭제, team 항목 삭제)으로 시험 기록·외부 글을 지운다. 문서 한 건 120KB, 참여 5,000명 한도.
+- 환경변수(Vercel 프로젝트, Production): `AX_CLASS_CODE`(교실 코드, Config. 비우면 코드 없이 참여), `AX_ADMIN_KEY`(관리자 키, Config라 Vercel에서 다시 볼 수 있음), 선택 `AX_NS`(같은 DB에 다른 교실을 둘 때 키 앞머리, 기본 `ax`). 바꾸면 Redeploy. 값은 저장소·스킬에 적지 않는다.
+- 저장 키: `ax:crew`(해시 uid→기록), `ax:team`(해시), `ax:prof`(해시 uid→{name,dept,at}), `ax:ver`(바뀔 때마다 +1). 화면은 20초마다(탭이 보일 때만) `ver`만 묻고 바뀌었을 때만 전체를 받는다. Upstash Free는 월 50만 명령이라 이 방식으로 여유가 있다.
+- claude.ai 아티팩트(SzCnxiy9BroQLwLxkpbFUq)는 지우지 않고, 템플릿 `HOME_URL`로 맨 위에 '이 교실은 이제 한 주소에서 운영합니다' 안내 띠를 단다(shim이 있는 Vercel에서는 `window.AX_SITE`로 띠를 숨김). 아티팩트 쪽 기록은 옮기지 않는다(통합 시점 기록 1건, 본인 시험). 복제할 때는 `HOME_URL`을 새 주소로 바꾸거나 비운다.
+- `site/index.html`은 `template/index.html`을 문서 골격(doctype·charset·viewport·설명·OG·파비콘·`/config.js`·`/shim.js`)으로 감싼 파일이다. 본문은 직접 고치지 않는다. template을 고친 뒤 `</style>\n\n<div class="wrap">`를 `</style>\n\n</head>\n<body>\n<div class="wrap">`로 바꿔 감싸고 끝에 `\n</body>\n</html>\n`을 붙인다. template·site를 같은 작업에서 함께 커밋한다.
+- 일반 웹에서는 아티팩트 런타임이 주던 `[hidden]` 숨김이 없으므로 템플릿 CSS에 `[hidden]{display:none!important}`를 둔다.
+- 옛 방식(참고): `window.AX_JOIN`이 없는 배포에서는 `window.AX_SHARED_URL`(환경변수 `AX_SHARED_URL` → `site/build.js` → `config.js`)이 있을 때 같은 자리에 claude.ai 함께 기록판 링크를 그린다. 통합판에서는 참여 버튼이 우선한다.
+- 시험: 서버는 Node에 stdin으로 db.js를 넣고 가짜 Upstash(fetch 가로채기)로 join·admin·set·snap·profiles·del과 거절(틀린 코드, 남의 crew, 비관리자 team, 위조 토큰)을 확인한다. 화면은 example.com에 `document.write`로 site HTML을 넣되 `/api/db`를 흉내 내는 fetch 목업을 shim 앞에 심어 참여 → 공유 모드 → 인증 요청 → 검수함 승인까지 돌린다(이 환경에서 localhost 서버는 브라우저에서 안 열렸다). 배포 뒤에는 실제 `/api/db`로 시험 참여 → 관리자 → 쓰기 → del로 지우기까지 한 번 돌리고, `/?t=…`와 `/shim.js` 응답을 올린 파일과 대조한다.
 
 ## 변경 이력
 
@@ -97,3 +102,4 @@ Artifact 게시 시 `template/capabilities.json`을 그대로 `capabilities`로 
 - 2026-10-30 게이미피케이션(사용자 요청): 단계 확인 문제 3개(미션 인증+문제 = 단계 완성), 수료 시험 10문항 80점 이상, AX 포인트·도전 과제 8개, '과 대항 현황' LIVE 탭(합계/1인당, 순위 공개), 소속 과 처음부터 입력. 커밋 55f5d1d, 오탈자 수정 2ca2165. 아티팩트 버전 11.
 - 2026-10-30 Vercel 개인 연습판 발행(ax-eogedoene.vercel.app, site/ 폴더), 공유 DB 없을 때 스스로 확인·학습 확인서·일반 내려받기, [hidden] 규칙 명시. 커밋 b17eba1·950e5d0. 아티팩트 버전 12(재게시 중 생긴 비공개 중복본은 삭제, 다음부터 원래 주소를 지정해 재게시 요청).
 - 2026-10-30 연습판에 기능별 함께 기록판 링크(검수 인증·과 대항·공식 수료증·안내문), 주소는 Vercel 환경변수 AX_SHARED_URL → build.js → config.js. 커밋 5c77786·a2a2fa5, 아티팩트 버전 13(원래 주소 지정 재게시).
+- 2026-11-04 두 판 통합(사용자: "아싸가 판단해서"): claude.ai 함께 기록판과 Vercel 연습판을 ax-eogedoene.vercel.app 한 주소로. site/shim.js(window.claude 흉내) + site/api/db.js(Upstash Redis, 교실 코드 참여·관리자 키·del 정리), 템플릿은 JOIN()/WHERE()/HOME_URL 안내 띠만 추가. 커밋 ac082be·2176c40·7de0483·386c135·7aba818·1d2579e, 아티팩트 버전 14(안내 띠, sha256 일치).
